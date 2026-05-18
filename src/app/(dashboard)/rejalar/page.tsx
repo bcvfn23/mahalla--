@@ -13,7 +13,7 @@ export default function RejalarPage() {
           <h2 className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-1">
             REJA BOSHQARUVI
           </h2>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
             {lang === 'uz' ? "Faol rejalar markazi" : "Центр активных планов"}
           </h1>
         </div>
@@ -28,7 +28,7 @@ export default function RejalarPage() {
           <h3 className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-1">
             YO'NALTIRILGAN ISHLANMALAR
           </h3>
-          <h2 className="text-lg font-bold text-white mb-6 pb-4 border-b border-card-border/50">
+          <h2 className="text-lg font-bold text-foreground mb-6 pb-4 border-b border-card-border/50">
             {lang === 'uz' ? "Kanban Reja Taxtasi" : "Канбан Доска Планов"}
           </h2>
           <div className="flex flex-col items-center justify-center h-full opacity-50 pb-20">
@@ -41,7 +41,7 @@ export default function RejalarPage() {
           <h3 className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-1">
             HAFTALIK AKTIVLIK
           </h3>
-          <h2 className="text-lg font-bold text-white mb-6 pb-4 border-b border-card-border/50">
+          <h2 className="text-lg font-bold text-foreground mb-6 pb-4 border-b border-card-border/50">
             {lang === 'uz' ? "Faollik grafigi" : "График активности"}
           </h2>
           

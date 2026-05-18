@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useI18n } from "@/lib/i18n";
 import { 
   ShieldAlert, 
   TrendingDown, 
@@ -16,75 +17,78 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  Legend
+  ResponsiveContainer
 } from "recharts";
 
-const crimeData = [
-  { name: 'Янв', value: 400, risk: 240 },
-  { name: 'Фев', value: 300, risk: 139 },
-  { name: 'Мар', value: 200, risk: 980 },
-  { name: 'Апр', value: 278, risk: 390 },
-  { name: 'Май', value: 189, risk: 480 },
-  { name: 'Июн', value: 239, risk: 380 },
-  { name: 'Июл', value: 349, risk: 430 },
-];
-
 const districtData = [
-  { name: 'Юнусабадский', crimes: 120, severity: 'high' },
-  { name: 'Алмазарский', crimes: 98, severity: 'medium' },
-  { name: 'Мирзо-Улугбекский', crimes: 86, severity: 'medium' },
-  { name: 'Чиланзарский', crimes: 145, severity: 'high' },
-  { name: 'Мирабадский', crimes: 45, severity: 'low' },
-];
-
-const kpiCards = [
-  {
-    title: "Всего инцидентов",
-    value: "2,543",
-    change: "+12.5%",
-    trend: "up",
-    icon: ShieldAlert,
-    color: "text-warning",
-    bg: "bg-warning/10",
-  },
-  {
-    title: "Индекс безопасности",
-    value: "84/100",
-    change: "+2.4%",
-    trend: "up",
-    icon: Activity,
-    color: "text-safe",
-    bg: "bg-safe/10",
-  },
-  {
-    title: "Опасные районы",
-    value: "4",
-    change: "-1",
-    trend: "down",
-    icon: MapPin,
-    color: "text-danger",
-    bg: "bg-danger/10",
-  },
-  {
-    title: "Активные патрули",
-    value: "128",
-    change: "+14",
-    trend: "up",
-    icon: Users,
-    color: "text-primary",
-    bg: "bg-primary/10",
-  }
+  { uz: 'Yunusobod', ru: 'Юнусабадский', crimes: 120, severity: 'high' },
+  { uz: 'Olmazor', ru: 'Алмазарский', crimes: 98, severity: 'medium' },
+  { uz: "Mirzo Ulug'bek", ru: 'Мирзо-Улугбекский', crimes: 86, severity: 'medium' },
+  { uz: 'Chilonzor', ru: 'Чиланзарский', crimes: 145, severity: 'high' },
+  { uz: 'Mirobod', ru: 'Мирабадский', crimes: 45, severity: 'low' },
 ];
 
 export default function Dashboard() {
+  const { lang } = useI18n();
+
+  const crimeData = [
+    { name: lang === 'uz' ? 'Yan' : 'Янв', value: 400, risk: 240 },
+    { name: lang === 'uz' ? 'Fev' : 'Фев', value: 300, risk: 139 },
+    { name: lang === 'uz' ? 'Mar' : 'Мар', value: 200, risk: 980 },
+    { name: lang === 'uz' ? 'Apr' : 'Апр', value: 278, risk: 390 },
+    { name: lang === 'uz' ? 'May' : 'Май', value: 189, risk: 480 },
+    { name: lang === 'uz' ? 'Iyn' : 'Июн', value: 239, risk: 380 },
+    { name: lang === 'uz' ? 'Iyl' : 'Июл', value: 349, risk: 430 },
+  ];
+
+  const kpiCards = [
+    {
+      title: lang === 'uz' ? "Jami insidentlar" : "Всего инцидентов",
+      value: "2,543",
+      change: "+12.5%",
+      trend: "up",
+      icon: ShieldAlert,
+      color: "text-warning",
+      bg: "bg-warning/10",
+    },
+    {
+      title: lang === 'uz' ? "Xavfsizlik indeksi" : "Индекс безопасности",
+      value: "84/100",
+      change: "+2.4%",
+      trend: "up",
+      icon: Activity,
+      color: "text-safe",
+      bg: "bg-safe/10",
+    },
+    {
+      title: lang === 'uz' ? "Xavfli tumanlar" : "Опасные районы",
+      value: "4",
+      change: "-1",
+      trend: "down",
+      icon: MapPin,
+      color: "text-danger",
+      bg: "bg-danger/10",
+    },
+    {
+      title: lang === 'uz' ? "Faol patrullar" : "Активные патрули",
+      value: "128",
+      change: "+14",
+      trend: "up",
+      icon: Users,
+      color: "text-primary",
+      bg: "bg-primary/10",
+    }
+  ];
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">Обзор системы</h1>
-        <p className="text-sm text-foreground/60 mt-1">Аналитика преступности в реальном времени (Г. Ташкент)</p>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          {lang === 'uz' ? "Tizim sharhi" : "Обзор системы"}
+        </h1>
+        <p className="text-sm text-foreground/60 mt-1">
+          {lang === 'uz' ? "Haqiqiy vaqtda jinoyatchilik tahlili (Toshkent sh.)" : "Аналитика преступности в реальном времени (Г. Ташкент)"}
+        </p>
       </div>
 
       {/* KPI Cards */}
@@ -130,10 +134,12 @@ export default function Dashboard() {
           className="lg:col-span-2 glass-panel p-6 rounded-2xl"
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-bold text-foreground">Динамика преступности</h2>
+            <h2 className="text-lg font-bold text-foreground">
+              {lang === 'uz' ? "Jinoyatchilik dinamikasi" : "Динамика преступности"}
+            </h2>
             <select className="bg-card border border-card-border text-foreground text-sm rounded-lg focus:ring-primary focus:border-primary block p-2 outline-none">
-              <option>Текущий год</option>
-              <option>Прошлый год</option>
+              <option>{lang === 'uz' ? "Joriy yil" : "Текущий год"}</option>
+              <option>{lang === 'uz' ? "O'tgan yil" : "Прошлый год"}</option>
             </select>
           </div>
           <div className="h-72 w-full">
@@ -156,8 +162,8 @@ export default function Dashboard() {
                   contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'rgba(51, 65, 85, 0.5)', borderRadius: '8px' }}
                   itemStyle={{ color: '#e2e8f0' }}
                 />
-                <Area type="monotone" dataKey="value" name="Инциденты" stroke="var(--primary)" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
-                <Area type="monotone" dataKey="risk" name="Уровень риска" stroke="var(--danger)" strokeWidth={2} fillOpacity={1} fill="url(#colorRisk)" />
+                <Area type="monotone" dataKey="value" name={lang === 'uz' ? "Insidentlar" : "Инциденты"} stroke="var(--primary)" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
+                <Area type="monotone" dataKey="risk" name={lang === 'uz' ? "Xavf darajasi" : "Уровень риска"} stroke="var(--danger)" strokeWidth={2} fillOpacity={1} fill="url(#colorRisk)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -171,12 +177,14 @@ export default function Dashboard() {
           className="glass-panel p-6 rounded-2xl flex flex-col"
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-bold text-foreground">Топ районов по риску</h2>
+            <h2 className="text-lg font-bold text-foreground">
+              {lang === 'uz' ? "Xavf bo'yicha top tumanlar" : "Топ районов по риску"}
+            </h2>
           </div>
           
           <div className="flex-1 overflow-y-auto pr-2 space-y-4">
             {districtData.sort((a, b) => b.crimes - a.crimes).map((district, i) => (
-              <div key={district.name} className="flex items-center justify-between p-3 rounded-lg bg-card/30 border border-card-border/50 hover:bg-card/60 transition-colors">
+              <div key={district.uz} className="flex items-center justify-between p-3 rounded-lg bg-card/30 border border-card-border/50 hover:bg-card/60 transition-colors">
                 <div className="flex items-center gap-3">
                   <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold
                     ${district.severity === 'high' ? 'bg-danger/20 text-danger border border-danger/30' : 
@@ -186,8 +194,8 @@ export default function Dashboard() {
                     {i + 1}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-foreground">{district.name}</p>
-                    <p className="text-xs text-foreground/50">{district.crimes} инцидентов</p>
+                    <p className="text-sm font-medium text-foreground">{lang === 'uz' ? district.uz : district.ru}</p>
+                    <p className="text-xs text-foreground/50">{district.crimes} {lang === 'uz' ? 'insidentlar' : 'инцидентов'}</p>
                   </div>
                 </div>
                 <div className={`px-2 py-1 rounded text-xs font-medium
@@ -195,7 +203,7 @@ export default function Dashboard() {
                     district.severity === 'medium' ? 'text-warning bg-warning/10' : 
                     'text-safe bg-safe/10'}`}
                 >
-                  {district.severity === 'high' ? 'Критично' : district.severity === 'medium' ? 'Внимание' : 'Норма'}
+                  {district.severity === 'high' ? (lang === 'uz' ? 'Kritik' : 'Критично') : district.severity === 'medium' ? (lang === 'uz' ? 'Diqqat' : 'Внимание') : (lang === 'uz' ? "Me'yor" : 'Норма')}
                 </div>
               </div>
             ))}

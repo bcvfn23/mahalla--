@@ -23,16 +23,16 @@ export default function LandingPage() {
       <header className="relative z-10 flex items-center justify-between px-6 py-6 lg:px-12 border-b border-white/5 bg-background/50 backdrop-blur-md">
         <div className="flex items-center gap-2">
           <ShieldAlert className="h-8 w-8 text-primary glow-safe" />
-          <span className="text-xl font-bold tracking-widest text-white drop-shadow-[0_0_10px_rgba(14,165,233,0.8)]">
+          <span className="text-xl font-bold tracking-widest text-foreground drop-shadow-[0_0_10px_rgba(14,165,233,0.8)]">
             SAFE MAHALLA<span className="text-primary text-xs ml-1">AI</span>
           </span>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex bg-[#0b1228] border border-card-border rounded-lg p-1 mr-4">
+          <div className="flex bg-card border border-card-border rounded-lg p-1 mr-4">
             <button
               onClick={() => setLang('uz')}
               className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${
-                lang === 'uz' ? 'bg-primary text-white shadow-lg' : 'text-foreground/50 hover:text-white'
+                lang === 'uz' ? 'bg-primary text-white shadow-lg' : 'text-foreground/50 hover:text-foreground'
               }`}
             >
               UZ
@@ -40,13 +40,13 @@ export default function LandingPage() {
             <button
               onClick={() => setLang('ru')}
               className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${
-                lang === 'ru' ? 'bg-primary text-white shadow-lg' : 'text-foreground/50 hover:text-white'
+                lang === 'ru' ? 'bg-primary text-white shadow-lg' : 'text-foreground/50 hover:text-foreground'
               }`}
             >
               RU
             </button>
           </div>
-          <Link href="/login" className="text-sm font-medium text-white/70 hover:text-white transition-colors">
+          <Link href="/login" className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors">
             {t("landing.login")}
           </Link>
         </div>
@@ -68,11 +68,11 @@ export default function LandingPage() {
               {t("landing.badge")}
             </div>
             
-            <h1 className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-primary mb-6 tracking-tight whitespace-pre-line">
+            <h1 className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-foreground via-blue-400 to-primary mb-6 tracking-tight whitespace-pre-line">
               {t("landing.title")}
             </h1>
             
-            <p className="mt-6 text-lg md:text-xl text-white/60 max-w-3xl mx-auto mb-10 leading-relaxed">
+            <p className="mt-6 text-lg md:text-xl text-foreground/60 max-w-3xl mx-auto mb-10 leading-relaxed">
               {t("landing.subtitle")}
             </p>
 
@@ -81,7 +81,7 @@ export default function LandingPage() {
                 {t("landing.about")}
                 <ArrowRight className="h-4 w-4" />
               </button>
-              <button className="w-full sm:w-auto px-8 py-4 text-base font-medium text-white bg-card border border-white/10 rounded-lg hover:bg-white/5 transition-all">
+              <button className="w-full sm:w-auto px-8 py-4 text-base font-medium text-foreground bg-card border border-card-border rounded-lg hover:bg-background/5 transition-all">
                 {t("landing.api")}
               </button>
             </div>
@@ -99,12 +99,12 @@ export default function LandingPage() {
               { icon: BrainCircuit, title: t("landing.feat2.title"), desc: t("landing.feat2.desc"), color: "text-primary" },
               { icon: Activity, title: t("landing.feat3.title"), desc: t("landing.feat3.desc"), color: "text-danger" }
             ].map((feature, i) => (
-              <div key={i} className="p-6 rounded-2xl bg-card/30 border border-white/5 backdrop-blur-sm hover:bg-card/50 transition-colors">
-                <div className="h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-4">
+              <div key={i} className="p-6 rounded-2xl bg-card/30 border border-card-border backdrop-blur-sm hover:bg-card/50 transition-colors">
+                <div className="h-12 w-12 rounded-xl bg-card border border-card-border flex items-center justify-center mb-4">
                   <feature.icon className={`h-6 w-6 ${feature.color}`} />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">{feature.title}</h3>
-                <p className="text-sm text-white/50">{feature.desc}</p>
+                <h3 className="text-lg font-bold text-foreground mb-2">{feature.title}</h3>
+                <p className="text-sm text-foreground/50">{feature.desc}</p>
               </div>
             ))}
           </motion.div>

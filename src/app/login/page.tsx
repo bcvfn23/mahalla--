@@ -33,7 +33,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#060b17] flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] mix-blend-screen animate-pulse pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-indigo-600/10 rounded-full blur-[100px] mix-blend-screen pointer-events-none" />
@@ -43,7 +43,7 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#1e3a8a] to-[#0f172a] border border-primary/30 shadow-lg shadow-primary/20 mb-6">
             <ShieldCheck className="w-8 h-8 text-primary" />
           </div>
-          <h1 className="text-3xl font-black text-white tracking-tight mb-2">Safe Mahalla</h1>
+          <h1 className="text-3xl font-black text-foreground tracking-tight mb-2">Safe Mahalla</h1>
           <p className="text-foreground/60 text-sm">Yagona elektron nazorat tizimi</p>
         </div>
 
@@ -59,7 +59,7 @@ export default function LoginPage() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="foydalanuvchi" 
-                    className="w-full bg-[#0d152e] border border-card-border/80 rounded-xl px-4 py-3 pl-11 text-sm text-white placeholder:text-foreground/30 focus:outline-none focus:border-primary/50 transition-colors"
+                    className="w-full bg-background border border-card-border/80 rounded-xl px-4 py-3 pl-11 text-sm text-foreground placeholder:text-foreground/30 focus:outline-none focus:border-primary/50 transition-colors"
                   />
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
                 </div>
@@ -74,7 +74,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••" 
-                    className="w-full bg-[#0d152e] border border-card-border/80 rounded-xl px-4 py-3 pl-11 text-sm text-white placeholder:text-foreground/30 focus:outline-none focus:border-primary/50 transition-colors"
+                    className="w-full bg-background border border-card-border/80 rounded-xl px-4 py-3 pl-11 text-sm text-foreground placeholder:text-foreground/30 focus:outline-none focus:border-primary/50 transition-colors"
                   />
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
                 </div>
@@ -83,8 +83,8 @@ export default function LoginPage() {
 
             <div className="flex items-center justify-between text-xs">
               <label className="flex items-center gap-2 cursor-pointer group">
-                <input type="checkbox" className="w-4 h-4 rounded border-card-border bg-[#0d152e] text-primary focus:ring-primary focus:ring-offset-0" />
-                <span className="text-foreground/70 group-hover:text-white transition-colors">Eslab qolish</span>
+                <input type="checkbox" className="w-4 h-4 rounded border-card-border bg-background text-primary focus:ring-primary focus:ring-offset-0" />
+                <span className="text-foreground/70 group-hover:text-foreground transition-colors">Eslab qolish</span>
               </label>
               <a href="#" className="text-primary hover:text-primary/80 font-medium transition-colors">Parolni unutdingizmi?</a>
             </div>
@@ -95,7 +95,7 @@ export default function LoginPage() {
             </button>
             
             <div className="pt-4 border-t border-card-border/50">
-               <button type="button" className="w-full py-3 bg-[#0d152e] hover:bg-card border border-card-border/80 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2 text-safe">
+               <button type="button" className="w-full py-3 bg-background hover:bg-card border border-card-border/80 text-foreground rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2 text-safe">
                  <ShieldCheck className="w-4 h-4" />
                  E-IMZO orqali kirish
                </button>

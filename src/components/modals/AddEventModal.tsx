@@ -52,7 +52,7 @@ export default function AddEventModal({ isOpen, onClose, onSave, selectedDate }:
         className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
         onClick={onClose}
       />
-      <div className="relative w-full max-w-md bg-[#0b1228] border border-card-border rounded-3xl shadow-2xl animate-in fade-in zoom-in-95 duration-200 p-8">
+      <div className="relative w-full max-w-md bg-card border border-card-border rounded-3xl shadow-2xl animate-in fade-in zoom-in-95 duration-200 p-8">
         
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -60,11 +60,11 @@ export default function AddEventModal({ isOpen, onClose, onSave, selectedDate }:
             <h3 className="text-[10px] font-bold uppercase tracking-widest text-primary mb-1">
               YANGI TADBIR
             </h3>
-            <h2 className="text-xl font-bold text-white">Tadbir qo'shish</h2>
+            <h2 className="text-xl font-bold text-foreground">Tadbir qo'shish</h2>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 text-foreground/50 hover:text-white hover:bg-card/80 rounded-xl transition-colors border border-transparent hover:border-card-border"
+            className="p-2 text-foreground/50 hover:text-foreground hover:bg-card/80 rounded-xl transition-colors border border-transparent hover:border-card-border"
           >
             <X className="w-5 h-5" />
           </button>
@@ -87,7 +87,7 @@ export default function AddEventModal({ isOpen, onClose, onSave, selectedDate }:
               value={title}
               onChange={e => setTitle(e.target.value)}
               placeholder="Masalan: Yig'ilish, Tadbir..." 
-              className="w-full bg-[#0d152e] border border-card-border/80 rounded-xl px-4 py-3 text-sm text-white placeholder:text-foreground/30 focus:outline-none focus:border-primary/50 transition-colors" 
+              className="w-full bg-background border border-card-border/80 rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-foreground/30 focus:outline-none focus:border-primary/50 transition-colors" 
             />
           </div>
 
@@ -97,7 +97,7 @@ export default function AddEventModal({ isOpen, onClose, onSave, selectedDate }:
               <select 
                 value={type}
                 onChange={e => setType(e.target.value)}
-                className="w-full bg-[#0d152e] border border-card-border/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/50 transition-colors appearance-none"
+                className="w-full bg-background border border-card-border/80 rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-primary/50 transition-colors appearance-none"
               >
                 <option value="muddat">⏰ Muddat</option>
                 <option value="uchrashuv">👥 Uchrashuv</option>
@@ -112,7 +112,7 @@ export default function AddEventModal({ isOpen, onClose, onSave, selectedDate }:
               value={desc}
               onChange={e => setDesc(e.target.value)}
               placeholder="Qo'shimcha ma'lumot..." 
-              className="w-full bg-[#0d152e] border border-card-border/80 rounded-xl px-4 py-3 text-sm text-white placeholder:text-foreground/30 focus:outline-none focus:border-primary/50 transition-colors min-h-[100px] resize-none" 
+              className="w-full bg-background border border-card-border/80 rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-foreground/30 focus:outline-none focus:border-primary/50 transition-colors min-h-[100px] resize-none" 
             />
           </div>
 
@@ -120,13 +120,13 @@ export default function AddEventModal({ isOpen, onClose, onSave, selectedDate }:
             <button 
               type="button" 
               onClick={onClose}
-              className="flex-1 py-3 bg-card border border-card-border/80 text-white rounded-xl text-sm font-bold hover:bg-card/80 transition-colors"
+              className="flex-1 py-3 bg-card border border-card-border/80 text-foreground rounded-xl text-sm font-bold hover:bg-card/80 transition-colors"
             >
               Bekor qilish
             </button>
             <button 
               type="submit" 
-              className="flex-1 py-3 bg-gradient-to-r from-primary to-[#06b6d4] hover:opacity-90 text-white rounded-xl text-sm font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all flex items-center justify-center gap-2"
+              className="flex-1 py-3 bg-gradient-to-r from-primary to-[#06b6d4] hover:opacity-90 text-foreground rounded-xl text-sm font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all flex items-center justify-center gap-2"
             >
               <Save className="w-4 h-4" />
               Saqlash

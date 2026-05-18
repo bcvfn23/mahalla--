@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
+import { useState, useEffect } from "react";
 import { 
   LayoutDashboard, 
   Users, 
@@ -21,12 +22,27 @@ import {
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const [youthCount, setYouthCount] = useState(0);
+
+  useEffect(() => {
+    const updateCount = () => {
+      const data = localStorage.getItem("youthList");
+      if (data) {
+        setYouthCount(JSON.parse(data).length);
+      } else {
+        setYouthCount(0);
+      }
+    };
+    updateCount();
+    window.addEventListener("youthAdded", updateCount);
+    return () => window.removeEventListener("youthAdded", updateCount);
+  }, []);
 
   const navigation = {
     asosiy: [
       { name: "nav.dashboard", href: "/dashboard", icon: LayoutDashboard },
-      { name: "nav.yoshlar", href: "/yoshlar", icon: Users, badge: "0" },
+      { name: "nav.yoshlar", href: "/yoshlar", icon: Users, badge: youthCount.toString() },
       { name: "nav.xarita", href: "/xarita", icon: Map },
       { name: "nav.faollik", href: "/faollik", icon: Activity },
     ],
@@ -56,8 +72,8 @@ export default function Sidebar() {
               href={item.href}
               className={cn(
                 isActive
-                  ? "bg-primary/10 text-white shadow-[inset_3px_0_0_0_var(--primary)]"
-                  : "text-foreground/60 hover:bg-card/80 hover:text-white",
+                  ? "bg-primary/10 text-primary shadow-[inset_3px_0_0_0_var(--primary)]"
+                  : "text-foreground/60 hover:bg-background/80 hover:text-foreground",
                 "group flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200"
               )}
             >
@@ -84,14 +100,14 @@ export default function Sidebar() {
   );
 
   return (
-    <div className="flex h-full w-[260px] flex-col bg-[#060b17] border-r border-card-border overflow-y-auto custom-scrollbar">
+    <div className="flex h-full w-[260px] flex-col bg-card border-r border-card-border overflow-y-auto custom-scrollbar">
       {/* Logo */}
       <div className="flex h-[88px] shrink-0 items-center gap-3 px-6 mb-4 mt-2">
         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.4)]">
           <span className="text-lg font-bold text-white tracking-wider">YR</span>
         </div>
         <div>
-          <h1 className="text-base font-bold text-white leading-tight">{t("global.app_name")}</h1>
+          <h1 className="text-base font-bold text-foreground leading-tight">{t("global.app_name")}</h1>
           <p className="text-[11px] text-foreground/50 mt-0.5">{t("global.version")}</p>
         </div>
       </div>
@@ -104,13 +120,13 @@ export default function Sidebar() {
       
       {/* User profile mini widget */}
       <div className="p-4 mt-auto">
-        <div className="p-3 bg-card rounded-xl border border-card-border flex items-center gap-3 hover:border-primary/30 transition-colors cursor-pointer group">
-          <div className="w-10 h-10 rounded-lg bg-indigo-900/50 flex items-center justify-center border border-indigo-500/30">
-            <span className="font-bold text-indigo-400">AD</span>
+        <div className="p-3 bg-background rounded-xl border border-card-border flex items-center gap-3 hover:border-primary/30 transition-colors cursor-pointer group">
+          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+            <span className="font-bold text-primary">AD</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-white truncate">Tizim Boshqaruvchisi</p>
-            <p className="text-[11px] text-foreground/50 truncate">👑 Admin</p>
+            <p className="text-sm font-bold text-foreground truncate">{lang === 'uz' ? "Tizim Boshqaruvchisi" : "Системный администратор"}</p>
+            <p className="text-[11px] text-foreground/50 truncate">👑 {lang === 'uz' ? "Admin" : "Админ"}</p>
           </div>
         </div>
         

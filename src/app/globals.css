@@ -24,6 +24,30 @@
   --glass-border: rgba(255, 255, 255, 0.05);
 }
 
+.light {
+  --background: #f1f5f9;
+  --foreground: #0f172a;
+  
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --card-border: rgba(0, 0, 0, 0.1);
+  
+  --primary: #0284c7; /* Light Blue */
+  --primary-foreground: #ffffff;
+  
+  --danger: #e11d48;
+  --danger-glow: rgba(225, 29, 72, 0.2);
+  
+  --warning: #d97706;
+  --warning-glow: rgba(217, 119, 6, 0.2);
+  
+  --safe: #059669;
+  --safe-glow: rgba(5, 150, 105, 0.2);
+
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.05);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

@@ -54,7 +54,7 @@ export default function FaollikPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-1">REAL VAQT</h2>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
             {lang === 'uz' ? "Tizim faolligi" : "Активность системы"}
           </h1>
         </div>
@@ -69,7 +69,7 @@ export default function FaollikPage() {
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-card-border/50">
             <div>
               <h3 className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-1">SO'NGGI HARAKATLAR</h3>
-              <h2 className="text-lg font-bold text-white">{lang === 'uz' ? "Faollik lenti" : "Лента активности"}</h2>
+              <h2 className="text-lg font-bold text-foreground">{lang === 'uz' ? "Faollik lenti" : "Лента активности"}</h2>
             </div>
             <button className="flex items-center gap-2 px-3 py-1.5 bg-card border border-card-border rounded-lg hover:bg-card/80 transition-all text-xs font-medium text-foreground/60">
               <Trash2 className="w-3.5 h-3.5" />
@@ -84,7 +84,7 @@ export default function FaollikPage() {
                   <item.icon className={`w-5 h-5 ${item.color}`} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-bold text-white truncate">{item.title}</h4>
+                  <h4 className="text-sm font-bold text-foreground truncate">{item.title}</h4>
                   <p className="text-xs text-foreground/60 mt-0.5">{item.desc}</p>
                   <p className="text-[10px] text-foreground/40 mt-1">{item.time}</p>
                 </div>
@@ -96,7 +96,7 @@ export default function FaollikPage() {
         <div className="glass-panel p-6 rounded-2xl h-fit">
           <div className="mb-6 pb-4 border-b border-card-border/50">
             <h3 className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-1">KEYINGI QADAMLAR</h3>
-            <h2 className="text-lg font-bold text-white">{lang === 'uz' ? "Ustuvor vazifalar" : "Приоритетные задачи"}</h2>
+            <h2 className="text-lg font-bold text-foreground">{lang === 'uz' ? "Ustuvor vazifalar" : "Приоритетные задачи"}</h2>
           </div>
           
           <div className="flex flex-col items-center justify-center py-12 text-center">

@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { Map, Layers } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 // Dynamically import MapComponent to prevent SSR issues with Leaflet
 const MapComponent = dynamic(() => import("@/components/ui/MapComponent"), {
@@ -14,23 +15,27 @@ const MapComponent = dynamic(() => import("@/components/ui/MapComponent"), {
 });
 
 export default function HeatmapPage() {
+  const { lang } = useI18n();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <Map className="h-6 w-6 text-primary" />
-            Интерактивный Heatmap
+            {lang === 'uz' ? "Interaktiv Heatmap" : "Интерактивный Heatmap"}
           </h1>
-          <p className="text-sm text-foreground/60 mt-1">Визуализация очагов преступности и плотности инцидентов</p>
+          <p className="text-foreground/60 mt-1">
+            {lang === 'uz' ? "Jinoyat o'choqlari va insidentlar zichligini vizualizatsiya qilish" : "Визуализация очагов преступности и плотности инцидентов"}
+          </p>
         </div>
         
         <div className="flex items-center gap-2 bg-card border border-card-border rounded-lg p-1">
           <button className="px-3 py-1.5 text-xs font-medium rounded bg-primary/20 text-primary">
-            Тепловая карта
+            {lang === 'uz' ? "Issiqlik xaritasi" : "Тепловая карта"}
           </button>
           <button className="px-3 py-1.5 text-xs font-medium rounded text-foreground/60 hover:text-foreground">
-            Кластеры
+            {lang === 'uz' ? "Klasterlar" : "Кластеры"}
           </button>
         </div>
       </div>
@@ -38,15 +43,21 @@ export default function HeatmapPage() {
       {/* Analytics Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="glass-panel p-4 rounded-xl border-l-2 border-l-danger">
-          <p className="text-xs text-foreground/60 uppercase tracking-wider mb-1">Критические зоны</p>
+          <p className="text-xs text-foreground/60 uppercase tracking-wider mb-1">
+            {lang === 'uz' ? "Kritik hududlar" : "Критические зоны"}
+          </p>
           <div className="text-2xl font-bold text-foreground">2</div>
         </div>
         <div className="glass-panel p-4 rounded-xl border-l-2 border-l-warning">
-          <p className="text-xs text-foreground/60 uppercase tracking-wider mb-1">Зоны внимания</p>
+          <p className="text-xs text-foreground/60 uppercase tracking-wider mb-1">
+            {lang === 'uz' ? "Diqqat zonalari" : "Зоны внимания"}
+          </p>
           <div className="text-2xl font-bold text-foreground">5</div>
         </div>
         <div className="glass-panel p-4 rounded-xl border-l-2 border-l-safe">
-          <p className="text-xs text-foreground/60 uppercase tracking-wider mb-1">Безопасные районы</p>
+          <p className="text-xs text-foreground/60 uppercase tracking-wider mb-1">
+            {lang === 'uz' ? "Xavfsiz hududlar" : "Безопасные районы"}
+          </p>
           <div className="text-2xl font-bold text-foreground">4</div>
         </div>
       </div>
@@ -56,7 +67,7 @@ export default function HeatmapPage() {
         {/* Map UI Overlay Controls */}
         <div className="absolute top-4 right-4 z-[400] flex flex-col gap-2">
           <div className="glass-panel p-2 rounded-lg flex flex-col gap-2">
-            <button className="p-2 bg-card/80 hover:bg-card rounded text-foreground/80 hover:text-primary transition-colors" title="Слои">
+            <button className="p-2 bg-card/80 hover:bg-card rounded text-foreground/80 hover:text-primary transition-colors" title={lang === 'uz' ? "Qatlamlar" : "Слои"}>
               <Layers className="h-5 w-5" />
             </button>
           </div>

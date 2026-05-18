@@ -44,7 +44,7 @@ export default function StatistikaPage() {
           <h2 className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-1">
             {lang === 'uz' ? "MA'LUMOT TAHLILI MARKAZI" : "ЦЕНТР АНАЛИЗА ДАННЫХ"}
           </h2>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
             {lang === 'uz' ? "Statistika va API Tahlil" : "Статистика и API Анализ"}
           </h1>
         </div>
@@ -60,7 +60,7 @@ export default function StatistikaPage() {
             <div className="absolute right-0 top-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-primary/10 transition-colors" />
             
             <h3 className="text-[10px] font-bold uppercase tracking-widest text-foreground/50 mb-4">{stat.title}</h3>
-            <div className="text-4xl font-black text-white mb-4 tracking-tight">{stat.value}</div>
+            <div className="text-4xl font-black text-foreground mb-4 tracking-tight">{stat.value}</div>
             
             <div className="flex items-center gap-2 text-xs font-medium">
               {stat.trend === 'up' && <span className="text-safe flex items-center gap-1"><TrendingUp className="w-3 h-3"/> {stat.change}</span>}
@@ -78,9 +78,9 @@ export default function StatistikaPage() {
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-card-border/50">
             <div>
               <h3 className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-1">RISK TAQSIMOTI</h3>
-              <h2 className="text-lg font-bold text-white">{lang === 'uz' ? "Gibrid holat kesimi" : "Гибридный срез состояний"}</h2>
+              <h2 className="text-lg font-bold text-foreground">{lang === 'uz' ? "Gibrid holat kesimi" : "Гибридный срез состояний"}</h2>
             </div>
-            <button className="px-3 py-1.5 bg-card border border-card-border rounded-lg text-xs font-medium text-foreground/70 hover:text-white transition-colors">
+            <button className="px-3 py-1.5 bg-card border border-card-border rounded-lg text-xs font-medium text-foreground/70 hover:text-foreground transition-colors">
               Hisobot
             </button>
           </div>
@@ -92,10 +92,10 @@ export default function StatistikaPage() {
         <div className="glass-panel p-6 rounded-2xl">
           <div className="mb-6 pb-4 border-b border-card-border/50">
             <h3 className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-1">AI BASHORATI</h3>
-            <h2 className="text-lg font-bold text-white">{lang === 'uz' ? "Xavf va Davomat tendensiyasi" : "Тенденции риска и посещаемости"}</h2>
+            <h2 className="text-lg font-bold text-foreground">{lang === 'uz' ? "Xavf va Davomat tendensiyasi" : "Тенденции риска и посещаемости"}</h2>
           </div>
           <div className="flex items-center gap-4 mb-4">
-            <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-danger"></div><span className="text-sm text-foreground/70">Yuqori xavf <strong className="text-white">0</strong></span></div>
+            <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-danger"></div><span className="text-sm text-foreground/70">Yuqori xavf <strong className="text-foreground">0</strong></span></div>
           </div>
           <div className="h-36 flex items-center justify-center border-2 border-dashed border-card-border/50 rounded-xl">
              <LineChart className="w-8 h-8 text-foreground/20" />

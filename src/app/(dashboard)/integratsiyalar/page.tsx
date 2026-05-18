@@ -1,12 +1,14 @@
 "use client";
 
 import { useI18n } from "@/lib/i18n";
-import { Zap, Clock, ShieldCheck } from "lucide-react";
+import { Zap, Clock, ShieldCheck, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function IntegratsiyalarPage() {
   const { t, lang } = useI18n();
 
-  const integrations = [
+  const initialIntegrations = [
     {
       id: "kundalik",
       name: "kundalik.com",
@@ -16,7 +18,8 @@ export default function IntegratsiyalarPage() {
       connected: 47,
       errors: 3,
       ping: "124ms",
-      lastSync: lang === 'uz' ? "5 daqiqa oldin" : "5 минут назад"
+      lastSync: lang === 'uz' ? "5 daqiqa oldin" : "5 минут назад",
+      syncing: false
     },
     {
       id: "mandat",
@@ -27,9 +30,46 @@ export default function IntegratsiyalarPage() {
       connected: 31,
       errors: 1,
       ping: "82ms",
-      lastSync: lang === 'uz' ? "7 daqiqa oldin" : "7 минут назад"
+      lastSync: lang === 'uz' ? "7 daqiqa oldin" : "7 минут назад",
+      syncing: false
     }
   ];
+
+  const [integrations, setIntegrations] = useState(initialIntegrations);
+  const [syncingAll, setSyncingAll] = useState(false);
+
+  const handleSync = (id: string) => {
+    setIntegrations(prev => prev.map(item => item.id === id ? { ...item, syncing: true } : item));
+    
+    setTimeout(() => {
+      setIntegrations(prev => prev.map(item => {
+        if (item.id === id) {
+          return {
+            ...item,
+            syncing: false,
+            lastSync: lang === 'uz' ? "hoziroq" : "только что"
+          };
+        }
+        return item;
+      }));
+      toast.success(lang === 'uz' ? "Sinxronizatsiya muvaffaqiyatli yakunlandi" : "Синхронизация успешно завершена");
+    }, 1500);
+  };
+
+  const handleSyncAll = () => {
+    setSyncingAll(true);
+    setIntegrations(prev => prev.map(item => ({ ...item, syncing: true })));
+    
+    setTimeout(() => {
+      setIntegrations(prev => prev.map(item => ({
+        ...item,
+        syncing: false,
+        lastSync: lang === 'uz' ? "hoziroq" : "только что"
+      })));
+      setSyncingAll(false);
+      toast.success(lang === 'uz' ? "Barcha tizimlar sinxronlandi" : "Все системы синхронизированы");
+    }, 2000);
+  };
 
   return (
     <div className="space-y-6">
@@ -38,12 +78,16 @@ export default function IntegratsiyalarPage() {
           <h2 className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-1">
             API VA EXTERNAL TIZIMLAR
           </h2>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
             {lang === 'uz' ? "Integratsiya boshqaruvi" : "Управление интеграциями"}
           </h1>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl font-bold shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all">
-          <Zap className="w-4 h-4" />
+        <button 
+          onClick={handleSyncAll}
+          disabled={syncingAll}
+          className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-foreground rounded-xl font-bold shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all"
+        >
+          {syncingAll ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
           {lang === 'uz' ? "Barcha xizmatlarni sinxronlash" : "Синхронизировать все"}
         </button>
       </div>
@@ -57,15 +101,19 @@ export default function IntegratsiyalarPage() {
                   <ShieldCheck className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white">{item.name}</h3>
+                  <h3 className="text-xl font-bold text-foreground">{item.name}</h3>
                   <div className="flex items-center gap-2 mt-1">
                     <span className={`w-2 h-2 rounded-full ${item.statusColor}`}></span>
                     <span className="text-xs font-bold text-safe tracking-wider">{item.status}</span>
                   </div>
                 </div>
               </div>
-              <button className="flex items-center gap-2 px-3 py-1.5 bg-card border border-card-border rounded-lg text-xs font-medium text-foreground hover:text-white transition-colors">
-                <Zap className="w-3 h-3 text-primary" />
+              <button 
+                onClick={() => handleSync(item.id)}
+                disabled={item.syncing || syncingAll}
+                className="flex items-center gap-2 px-3 py-1.5 bg-card border border-card-border rounded-lg text-xs font-medium text-foreground hover:text-foreground transition-colors disabled:opacity-50"
+              >
+                {item.syncing ? <Loader2 className="w-3 h-3 text-primary animate-spin" /> : <Zap className="w-3 h-3 text-primary" />}
                 Sync
               </button>
             </div>

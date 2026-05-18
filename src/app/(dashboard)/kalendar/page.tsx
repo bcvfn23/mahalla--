@@ -33,14 +33,14 @@ export default function KalendarPage() {
       case 'muddat': return { border: 'border-danger/50 text-danger', icon: '⏰', name: 'Muddat' };
       case 'uchrashuv': return { border: 'border-primary/50 text-primary', icon: '👥', name: 'Uchrashuv' };
       case 'tadbir': return { border: 'border-safe/50 text-safe', icon: '🎉', name: 'Tadbir' };
-      default: return { border: 'border-foreground/20 text-white', icon: '📌', name: 'Tadbir' };
+      default: return { border: 'border-foreground/20 text-foreground', icon: '📌', name: 'Tadbir' };
     }
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-white">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">
           {lang === 'uz' ? "Tadbirlar Kalendari" : "Календарь мероприятий"}
         </h1>
       </div>
@@ -51,7 +51,7 @@ export default function KalendarPage() {
             <button className="p-2 rounded-full bg-card hover:bg-card/80 border border-card-border transition-colors">
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <h2 className="text-lg font-bold text-white">May 2026</h2>
+            <h2 className="text-lg font-bold text-foreground">May 2026</h2>
             <button className="p-2 rounded-full bg-card hover:bg-card/80 border border-card-border transition-colors">
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -79,7 +79,7 @@ export default function KalendarPage() {
                   className={`h-16 rounded-xl flex items-start p-2 transition-colors cursor-pointer border relative ${
                     date === selectedDay 
                       ? 'bg-primary/20 border-primary text-primary font-bold shadow-[0_0_15px_rgba(6,182,212,0.2)]' 
-                      : 'bg-card/30 hover:bg-card border-card-border/50 text-white'
+                      : 'bg-card/30 hover:bg-card border-card-border/50 text-foreground'
                   }`}
                 >
                   {date}
@@ -100,10 +100,10 @@ export default function KalendarPage() {
 
         <div className="glass-panel p-6 rounded-2xl min-h-[500px] flex flex-col">
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-card-border/50">
-            <h2 className="text-lg font-bold text-white">{selectedDay} May 2026</h2>
+            <h2 className="text-lg font-bold text-foreground">{selectedDay} May 2026</h2>
             <button 
               onClick={() => setIsAddModalOpen(true)}
-              className="px-4 py-2 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.4)]"
+              className="px-4 py-2 bg-primary hover:bg-primary/90 text-foreground text-xs font-bold rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.4)]"
             >
               + {lang === 'uz' ? "Tadbir" : "Событие"}
             </button>
@@ -125,12 +125,12 @@ export default function KalendarPage() {
                       <span className="text-xs font-bold uppercase tracking-wider">{style.name}</span>
                       <button 
                         onClick={() => handleDelete(ev.id)}
-                        className="absolute top-2 right-2 p-1.5 rounded-lg bg-card/50 hover:bg-danger hover:text-white transition-colors opacity-0 group-hover:opacity-100"
+                        className="absolute top-2 right-2 p-1.5 rounded-lg bg-card/50 hover:bg-danger hover:text-foreground transition-colors opacity-0 group-hover:opacity-100"
                       >
                         <X className="w-3 h-3" />
                       </button>
                     </div>
-                    <h3 className="text-white font-bold mb-1">{ev.title}</h3>
+                    <h3 className="text-foreground font-bold mb-1">{ev.title}</h3>
                     {ev.desc && (
                       <p className="text-xs text-foreground/50">{ev.desc}</p>
                     )}
