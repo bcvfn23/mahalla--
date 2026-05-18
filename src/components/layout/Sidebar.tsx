@@ -3,115 +3,120 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n";
 import { 
   LayoutDashboard, 
+  Users, 
   Map, 
+  Activity, 
+  ClipboardList, 
+  Calendar, 
+  LineChart, 
   BrainCircuit, 
-  TrendingUp, 
-  FileText, 
-  UploadCloud, 
-  Bell, 
-  Settings,
-  ShieldAlert
+  Link as LinkIcon,
+  User,
+  LogOut
 } from "lucide-react";
-
-const navigation = [
-  { name: "Дашборд", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Карта преступности", href: "/heatmap", icon: Map },
-  { name: "Аналитика ИИ", href: "/analytics", icon: BrainCircuit },
-  { name: "Прогнозы", href: "/predictions", icon: TrendingUp },
-  { name: "Отчеты", href: "/reports", icon: FileText },
-  { name: "Загрузка данных", href: "/upload", icon: UploadCloud },
-];
-
-const secondaryNavigation = [
-  { name: "Уведомления", href: "/notifications", icon: Bell },
-  { name: "Настройки", href: "/settings", icon: Settings },
-];
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { t } = useI18n();
 
-  return (
-    <div className="flex h-full w-64 flex-col bg-card/40 backdrop-blur-md border-r border-card-border">
-      <div className="flex h-16 shrink-0 items-center gap-2 px-6">
-        <ShieldAlert className="h-8 w-8 text-primary" />
-        <span className="text-lg font-bold tracking-widest text-primary-foreground drop-shadow-[0_0_10px_rgba(14,165,233,0.8)]">
-          SAFE MAHALLA
-        </span>
-      </div>
+  const navigation = {
+    asosiy: [
+      { name: "nav.dashboard", href: "/dashboard", icon: LayoutDashboard },
+      { name: "nav.yoshlar", href: "/yoshlar", icon: Users, badge: "0" },
+      { name: "nav.xarita", href: "/xarita", icon: Map },
+      { name: "nav.faollik", href: "/faollik", icon: Activity },
+    ],
+    boshqaruv: [
+      { name: "nav.rejalar", href: "/rejalar", icon: ClipboardList },
+      { name: "nav.kalendar", href: "/kalendar", icon: Calendar },
+      { name: "nav.statistika", href: "/statistika", icon: LineChart },
+      { name: "nav.ai_tahlil", href: "/ai-tahlil", icon: BrainCircuit },
+      { name: "nav.integratsiyalar", href: "/integratsiyalar", icon: LinkIcon },
+    ],
+    hisob: [
+      { name: "nav.profil", href: "/profil", icon: User },
+    ]
+  };
 
-      <div className="flex flex-1 flex-col overflow-y-auto px-4 py-6">
-        <nav className="flex-1 space-y-1">
-          {navigation.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
-                  isActive
-                    ? "bg-primary/20 text-primary-foreground glow-safe border-l-2 border-primary"
-                    : "text-foreground/70 hover:bg-card hover:text-foreground",
-                  "group flex items-center px-3 py-3 text-sm font-medium rounded-r-md transition-all duration-300"
-                )}
-              >
+  const renderNavSection = (items: any[], titleKey: string) => (
+    <div className="mb-6">
+      <h3 className="px-6 mb-3 text-[10px] font-bold uppercase tracking-widest text-foreground/40">
+        {t(titleKey)}
+      </h3>
+      <div className="space-y-1 px-3">
+        {items.map((item) => {
+          const isActive = pathname === item.href || (pathname === '/' && item.href === '/dashboard');
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={cn(
+                isActive
+                  ? "bg-primary/10 text-white shadow-[inset_3px_0_0_0_var(--primary)]"
+                  : "text-foreground/60 hover:bg-card/80 hover:text-white",
+                "group flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200"
+              )}
+            >
+              <div className="flex items-center">
                 <item.icon
                   className={cn(
-                    isActive ? "text-primary" : "text-foreground/50 group-hover:text-foreground/80",
-                    "mr-3 h-5 w-5 flex-shrink-0 transition-colors"
+                    isActive ? "text-primary drop-shadow-[0_0_5px_rgba(6,182,212,0.5)]" : "text-foreground/40 group-hover:text-foreground/80",
+                    "mr-3 h-5 w-5 flex-shrink-0 transition-all"
                   )}
                   aria-hidden="true"
                 />
-                {item.name}
-              </Link>
-            );
-          })}
-        </nav>
+                {t(item.name)}
+              </div>
+              {item.badge && (
+                <span className="bg-primary/20 text-primary text-xs font-bold px-2 py-0.5 rounded-full">
+                  {item.badge}
+                </span>
+              )}
+            </Link>
+          );
+        })}
+      </div>
+    </div>
+  );
 
-        <div className="mt-8">
-          <h3 className="px-3 text-xs font-semibold uppercase tracking-wider text-foreground/40">
-            Система
-          </h3>
-          <div className="mt-2 space-y-1">
-            {secondaryNavigation.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={cn(
-                    isActive
-                      ? "bg-primary/10 text-primary-foreground"
-                      : "text-foreground/70 hover:bg-card hover:text-foreground",
-                    "group flex items-center rounded-md px-3 py-2 text-sm font-medium transition-all"
-                  )}
-                >
-                  <item.icon
-                    className={cn(
-                      isActive ? "text-primary" : "text-foreground/50 group-hover:text-foreground/80",
-                      "mr-3 h-5 w-5 flex-shrink-0"
-                    )}
-                    aria-hidden="true"
-                  />
-                  {item.name}
-                </Link>
-              );
-            })}
-          </div>
+  return (
+    <div className="flex h-full w-[260px] flex-col bg-[#060b17] border-r border-card-border overflow-y-auto custom-scrollbar">
+      {/* Logo */}
+      <div className="flex h-[88px] shrink-0 items-center gap-3 px-6 mb-4 mt-2">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+          <span className="text-lg font-bold text-white tracking-wider">YR</span>
+        </div>
+        <div>
+          <h1 className="text-base font-bold text-white leading-tight">{t("global.app_name")}</h1>
+          <p className="text-[11px] text-foreground/50 mt-0.5">{t("global.version")}</p>
         </div>
       </div>
+
+      <div className="flex-1">
+        {renderNavSection(navigation.asosiy, "section.asosiy")}
+        {renderNavSection(navigation.boshqaruv, "section.boshqaruv")}
+        {renderNavSection(navigation.hisob, "section.hisob")}
+      </div>
       
-      <div className="p-4 border-t border-card-border">
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center border border-primary/50">
-            <span className="text-sm font-bold text-primary">А</span>
+      {/* User profile mini widget */}
+      <div className="p-4 mt-auto">
+        <div className="p-3 bg-card rounded-xl border border-card-border flex items-center gap-3 hover:border-primary/30 transition-colors cursor-pointer group">
+          <div className="w-10 h-10 rounded-lg bg-indigo-900/50 flex items-center justify-center border border-indigo-500/30">
+            <span className="font-bold text-indigo-400">AD</span>
           </div>
-          <div>
-            <p className="text-sm font-medium text-foreground">Аналитик</p>
-            <p className="text-xs text-foreground/50">МВД РУз</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-white truncate">Tizim Boshqaruvchisi</p>
+            <p className="text-[11px] text-foreground/50 truncate">👑 Admin</p>
           </div>
         </div>
+        
+        <button className="w-full mt-3 flex items-center gap-2 px-4 py-2 text-sm font-medium text-danger hover:bg-danger/10 rounded-lg transition-colors">
+          <LogOut className="w-4 h-4" />
+          {t("nav.chiqish")}
+        </button>
       </div>
     </div>
   );
