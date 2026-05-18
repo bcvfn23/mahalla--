@@ -85,7 +85,7 @@ export default function IntegratsiyalarPage() {
         <button 
           onClick={handleSyncAll}
           disabled={syncingAll}
-          className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-foreground rounded-xl font-bold shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all"
+          className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-white rounded-xl font-bold shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all"
         >
           {syncingAll ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
           {lang === 'uz' ? "Barcha xizmatlarni sinxronlash" : "Синхронизировать все"}

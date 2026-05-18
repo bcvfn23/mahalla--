@@ -126,7 +126,7 @@ export default function AddEventModal({ isOpen, onClose, onSave, selectedDate }:
             </button>
             <button 
               type="submit" 
-              className="flex-1 py-3 bg-gradient-to-r from-primary to-[#06b6d4] hover:opacity-90 text-foreground rounded-xl text-sm font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all flex items-center justify-center gap-2"
+              className="flex-1 py-3 bg-gradient-to-r from-primary to-[#06b6d4] hover:opacity-90 text-white rounded-xl text-sm font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all flex items-center justify-center gap-2"
             >
               <Save className="w-4 h-4" />
               Saqlash

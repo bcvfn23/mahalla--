@@ -207,7 +207,7 @@ export default function AddYouthModal({ isOpen, onClose, editData }: Props) {
             <button 
               type="button"
               onClick={onClose}
-              className="px-6 py-2.5 bg-transparent border border-card-border rounded-xl text-sm font-bold text-white hover:bg-card transition-colors"
+              className="px-6 py-2.5 bg-transparent border border-card-border rounded-xl text-sm font-bold text-foreground hover:bg-card transition-colors"
             >
               {lang === 'uz' ? "Bekor qilish" : "Отмена"}
             </button>

@@ -88,7 +88,7 @@ export default function AITahlilPage() {
                 >
                   {lang === 'uz' ? "Tozalash" : "Очистить"}
                 </button>
-                <button className="px-3 py-1.5 rounded-lg bg-primary hover:bg-primary/90 text-foreground text-xs font-bold shadow-[0_0_10px_rgba(6,182,212,0.3)] transition-colors">
+                <button className="px-3 py-1.5 rounded-lg bg-primary hover:bg-primary/90 text-white text-xs font-bold shadow-[0_0_10px_rgba(6,182,212,0.3)] transition-colors">
                   {lang === 'uz' ? "Tizim Tahlili" : "Анализ системы"}
                 </button>
               </div>
@@ -144,7 +144,7 @@ export default function AITahlilPage() {
               <button
                 onClick={handleSend}
                 disabled={!inputValue.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-primary disabled:bg-primary/50 text-foreground rounded-lg hover:bg-primary/90 transition-all shadow-[0_0_10px_rgba(6,182,212,0.3)]"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-primary disabled:bg-primary/50 text-white rounded-lg hover:bg-primary/90 transition-all shadow-[0_0_10px_rgba(6,182,212,0.3)]"
               >
                 <Send className="w-4 h-4 ml-0.5" />
               </button>
@@ -211,7 +211,7 @@ export default function AITahlilPage() {
                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
                 </div>
               </div>
-              <button className="w-full py-3 bg-gradient-to-r from-primary to-[#06b6d4] hover:opacity-90 text-foreground rounded-xl text-sm font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all">
+              <button className="w-full py-3 bg-gradient-to-r from-primary to-[#06b6d4] hover:opacity-90 text-white rounded-xl text-sm font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all">
                 {lang === 'uz' ? "Tahlil Qilish" : "Анализировать"}
               </button>
             </div>

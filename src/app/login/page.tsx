@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ShieldCheck, Lock, User, KeyRound } from "lucide-react";
 import { toast } from "sonner";
+import { useI18n } from "@/lib/i18n";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const { t, lang } = useI18n();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,12 +25,12 @@ export default function LoginPage() {
     const validUser = users.find(u => u.user === username && u.pass === password);
 
     if (validUser) {
-      toast.success(`Xush kelibsiz, ${validUser.role}!`);
+      toast.success(`${t("login.success")}, ${validUser.role}!`);
       // Save role to localStorage to show correct name in Sidebar if needed (mock)
       localStorage.setItem("userRole", validUser.role);
       router.push("/dashboard");
     } else {
-      toast.error("Login yoki parol noto'g'ri!");
+      toast.error(t("login.error"));
     }
   };
 
@@ -44,21 +46,21 @@ export default function LoginPage() {
             <ShieldCheck className="w-8 h-8 text-primary" />
           </div>
           <h1 className="text-3xl font-black text-foreground tracking-tight mb-2">Safe Mahalla</h1>
-          <p className="text-foreground/60 text-sm">Yagona elektron nazorat tizimi</p>
+          <p className="text-foreground/60 text-sm">{t("login.subtitle")}</p>
         </div>
 
         <div className="glass-panel p-8 rounded-3xl border border-card-border/50 shadow-2xl backdrop-blur-xl">
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold text-foreground/50 uppercase tracking-wider mb-2">Login</label>
+                <label className="block text-[10px] font-bold text-foreground/50 uppercase tracking-wider mb-2">{t("login.username")}</label>
                 <div className="relative">
                   <input 
                     type="text" 
                     required
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="foydalanuvchi" 
+                    placeholder={t("login.username_placeholder")} 
                     className="w-full bg-background border border-card-border/80 rounded-xl px-4 py-3 pl-11 text-sm text-foreground placeholder:text-foreground/30 focus:outline-none focus:border-primary/50 transition-colors"
                   />
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
@@ -66,7 +68,7 @@ export default function LoginPage() {
               </div>
               
               <div>
-                <label className="block text-[10px] font-bold text-foreground/50 uppercase tracking-wider mb-2">Parol</label>
+                <label className="block text-[10px] font-bold text-foreground/50 uppercase tracking-wider mb-2">{t("login.password")}</label>
                 <div className="relative">
                   <input 
                     type="password" 
@@ -84,27 +86,27 @@ export default function LoginPage() {
             <div className="flex items-center justify-between text-xs">
               <label className="flex items-center gap-2 cursor-pointer group">
                 <input type="checkbox" className="w-4 h-4 rounded border-card-border bg-background text-primary focus:ring-primary focus:ring-offset-0" />
-                <span className="text-foreground/70 group-hover:text-foreground transition-colors">Eslab qolish</span>
+                <span className="text-foreground/70 group-hover:text-foreground transition-colors">{t("login.remember")}</span>
               </label>
-              <a href="#" className="text-primary hover:text-primary/80 font-medium transition-colors">Parolni unutdingizmi?</a>
+              <a href="#" className="text-primary hover:text-primary/80 font-medium transition-colors">{t("login.forgot")}</a>
             </div>
 
             <button type="submit" className="w-full py-3.5 bg-gradient-to-r from-primary to-[#06b6d4] hover:opacity-90 text-white rounded-xl text-sm font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all flex items-center justify-center gap-2">
               <KeyRound className="w-4 h-4" />
-              Tizimga kirish
+              {t("login.submit")}
             </button>
             
             <div className="pt-4 border-t border-card-border/50">
                <button type="button" className="w-full py-3 bg-background hover:bg-card border border-card-border/80 text-foreground rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2 text-safe">
                  <ShieldCheck className="w-4 h-4" />
-                 E-IMZO orqali kirish
+                 {t("login.e_imzo")}
                </button>
             </div>
           </form>
         </div>
         
         <p className="text-center text-[10px] text-foreground/40 mt-8 uppercase tracking-widest font-bold">
-          © {new Date().getFullYear()} O'ZBEKISTON RESPUBLIKASI YOSHLAR ISHLARI AGENTLIGI
+          © {new Date().getFullYear()} {lang === 'uz' ? "O'ZBEKISTON RESPUBLIKASI YOSHLAR ISHLARI AGENTLIGI" : "АГЕНТСТВО ПО ДЕЛАМ МОЛОДЕЖИ РЕСПУБЛИКИ УЗБЕКИСТАН"}
         </p>
       </div>
     </div>

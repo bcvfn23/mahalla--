@@ -60,6 +60,18 @@ const translations = {
     "ai.rec_title": "AI Tavsiyasi",
     "ai.rec_desc": "Chilonzor tumanida tungi patrullar sonini 20% ga oshirish.",
     "ai.status": "AI tizimi ma'lumotlarni real vaqtda tahlil qilmoqda",
+
+    // Login
+    "login.subtitle": "Yagona elektron nazorat tizimi",
+    "login.username": "Login",
+    "login.username_placeholder": "foydalanuvchi",
+    "login.password": "Parol",
+    "login.remember": "Eslab qolish",
+    "login.forgot": "Parolni unutdingizmi?",
+    "login.submit": "Tizimga kirish",
+    "login.e_imzo": "E-IMZO orqali kirish",
+    "login.error": "Login yoki parol noto'g'ri!",
+    "login.success": "Xush kelibsiz",
   },
   ru: {
     // Sidebar
@@ -110,6 +122,18 @@ const translations = {
     "ai.rec_title": "Рекомендация ИИ",
     "ai.rec_desc": "Увеличить частоту ночных патрулей в Чиланзарском районе на 20%.",
     "ai.status": "Система ИИ анализирует данные в реальном времени",
+
+    // Login
+    "login.subtitle": "Единая электронная система контроля",
+    "login.username": "Логин",
+    "login.username_placeholder": "пользователь",
+    "login.password": "Пароль",
+    "login.remember": "Запомнить меня",
+    "login.forgot": "Забыли пароль?",
+    "login.submit": "Войти в систему",
+    "login.e_imzo": "Войти через ЭЦП",
+    "login.error": "Неверный логин или пароль!",
+    "login.success": "Добро пожаловать",
   }
 };
 

@@ -103,7 +103,7 @@ export default function KalendarPage() {
             <h2 className="text-lg font-bold text-foreground">{selectedDay} May 2026</h2>
             <button 
               onClick={() => setIsAddModalOpen(true)}
-              className="px-4 py-2 bg-primary hover:bg-primary/90 text-foreground text-xs font-bold rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.4)]"
+              className="px-4 py-2 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.4)]"
             >
               + {lang === 'uz' ? "Tadbir" : "Событие"}
             </button>
