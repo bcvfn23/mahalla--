@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
@@ -103,8 +104,8 @@ export default function Sidebar() {
     <div className="flex h-full w-[260px] flex-col bg-card border-r border-card-border overflow-y-auto custom-scrollbar">
       {/* Logo */}
       <div className="flex h-[88px] shrink-0 items-center gap-3 px-6 mb-4 mt-2">
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.4)]">
-          <span className="text-lg font-bold text-white tracking-wider">YR</span>
+        <div className="w-12 h-12 rounded-xl border border-primary/30 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.4)] overflow-hidden bg-card">
+          <Image src="/logo.png" alt="Safe Mahalla AI Logo" width={48} height={48} className="w-full h-full object-cover" />
         </div>
         <div>
           <h1 className="text-base font-bold text-foreground leading-tight">{t("global.app_name")}</h1>

@@ -1,20 +1,31 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { ShieldCheck, Lock, User, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n";
+import React, { useState } from "react";
+import Image from "next/image";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
   const { t, lang } = useI18n();
 
+  // Load saved username if "Remember me" was previously checked
+  React.useEffect(() => {
+    const savedUser = localStorage.getItem("rememberedUsername");
+    if (savedUser) {
+      setUsername(savedUser);
+      setRememberMe(true);
+    }
+  }, []);
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Mock Users
     const users = [
       { user: "admin", pass: "123", role: "Tizim Boshqaruvchisi" },
@@ -26,7 +37,13 @@ export default function LoginPage() {
 
     if (validUser) {
       toast.success(`${t("login.success")}, ${validUser.role}!`);
-      // Save role to localStorage to show correct name in Sidebar if needed (mock)
+
+      if (rememberMe) {
+        localStorage.setItem("rememberedUsername", username);
+      } else {
+        localStorage.removeItem("rememberedUsername");
+      }
+
       localStorage.setItem("userRole", validUser.role);
       router.push("/dashboard");
     } else {
@@ -39,11 +56,11 @@ export default function LoginPage() {
       {/* Background Effects */}
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] mix-blend-screen animate-pulse pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-indigo-600/10 rounded-full blur-[100px] mix-blend-screen pointer-events-none" />
-      
+
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#1e3a8a] to-[#0f172a] border border-primary/30 shadow-lg shadow-primary/20 mb-6">
-            <ShieldCheck className="w-8 h-8 text-primary" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl border border-primary/30 shadow-[0_0_20px_rgba(14,165,233,0.3)] mb-6 overflow-hidden bg-card">
+            <Image src="/logo.png" alt="Safe Mahalla AI Logo" width={80} height={80} className="w-full h-full object-cover" />
           </div>
           <h1 className="text-3xl font-black text-foreground tracking-tight mb-2">Safe Mahalla</h1>
           <p className="text-foreground/60 text-sm">{t("login.subtitle")}</p>
@@ -55,27 +72,27 @@ export default function LoginPage() {
               <div>
                 <label className="block text-[10px] font-bold text-foreground/50 uppercase tracking-wider mb-2">{t("login.username")}</label>
                 <div className="relative">
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     required
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder={t("login.username_placeholder")} 
+                    placeholder={t("login.username_placeholder")}
                     className="w-full bg-background border border-card-border/80 rounded-xl px-4 py-3 pl-11 text-sm text-foreground placeholder:text-foreground/30 focus:outline-none focus:border-primary/50 transition-colors"
                   />
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
                 </div>
               </div>
-              
+
               <div>
                 <label className="block text-[10px] font-bold text-foreground/50 uppercase tracking-wider mb-2">{t("login.password")}</label>
                 <div className="relative">
-                  <input 
-                    type="password" 
+                  <input
+                    type="password"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••" 
+                    placeholder="••••••••"
                     className="w-full bg-background border border-card-border/80 rounded-xl px-4 py-3 pl-11 text-sm text-foreground placeholder:text-foreground/30 focus:outline-none focus:border-primary/50 transition-colors"
                   />
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
@@ -85,7 +102,12 @@ export default function LoginPage() {
 
             <div className="flex items-center justify-between text-xs">
               <label className="flex items-center gap-2 cursor-pointer group">
-                <input type="checkbox" className="w-4 h-4 rounded border-card-border bg-background text-primary focus:ring-primary focus:ring-offset-0" />
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded border-card-border bg-background text-primary focus:ring-primary focus:ring-offset-0"
+                />
                 <span className="text-foreground/70 group-hover:text-foreground transition-colors">{t("login.remember")}</span>
               </label>
               <a href="#" className="text-primary hover:text-primary/80 font-medium transition-colors">{t("login.forgot")}</a>
@@ -95,16 +117,16 @@ export default function LoginPage() {
               <KeyRound className="w-4 h-4" />
               {t("login.submit")}
             </button>
-            
+
             <div className="pt-4 border-t border-card-border/50">
-               <button type="button" className="w-full py-3 bg-background hover:bg-card border border-card-border/80 text-foreground rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2 text-safe">
-                 <ShieldCheck className="w-4 h-4" />
-                 {t("login.e_imzo")}
-               </button>
+              <button type="button" className="w-full py-3 bg-background hover:bg-card border border-card-border/80 text-foreground rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2 text-safe">
+                <ShieldCheck className="w-4 h-4" />
+                {t("login.e_imzo")}
+              </button>
             </div>
           </form>
         </div>
-        
+
         <p className="text-center text-[10px] text-foreground/40 mt-8 uppercase tracking-widest font-bold">
           © {new Date().getFullYear()} {lang === 'uz' ? "O'ZBEKISTON RESPUBLIKASI YOSHLAR ISHLARI AGENTLIGI" : "АГЕНТСТВО ПО ДЕЛАМ МОЛОДЕЖИ РЕСПУБЛИКИ УЗБЕКИСТАН"}
         </p>

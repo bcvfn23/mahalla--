@@ -1,13 +1,16 @@
 "use client";
 
 import { useI18n } from "@/lib/i18n";
-import { Search, Filter, Download, FileText, Database, User } from "lucide-react";
+import { Search, Filter, Download, FileText, Database, User, Edit, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
+import AddYouthModal from "@/components/modals/AddYouthModal";
 
 export default function YoshlarPage() {
   const { t, lang } = useI18n();
   const [youthList, setYouthList] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingYouth, setEditingYouth] = useState<any>(null);
 
   const loadYouth = () => {
     const data = localStorage.getItem("youthList");
@@ -21,6 +24,20 @@ export default function YoshlarPage() {
     window.addEventListener("youthAdded", loadYouth);
     return () => window.removeEventListener("youthAdded", loadYouth);
   }, []);
+
+  const handleDelete = (id: string) => {
+    if (confirm(lang === 'uz' ? "Rostdan ham o'chirmoqchimisiz?" : "Вы действительно хотите удалить?")) {
+      const updatedList = youthList.filter(y => y.id !== id);
+      setYouthList(updatedList);
+      localStorage.setItem("youthList", JSON.stringify(updatedList));
+      window.dispatchEvent(new Event("youthAdded")); // update navbar count
+    }
+  };
+
+  const handleEdit = (youth: any) => {
+    setEditingYouth(youth);
+    setEditModalOpen(true);
+  };
 
   const filteredList = youthList.filter(y =>
     y.ism.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -99,6 +116,7 @@ export default function YoshlarPage() {
                   <th className="p-4 font-bold">Pasport / JSHSHIR</th>
                   <th className="p-4 font-bold">{lang === 'uz' ? "Telefon / Manzil" : "Телефон / Адрес"}</th>
                   <th className="p-4 font-bold">{lang === 'uz' ? "Xavf darajasi" : "Уровень риска"}</th>
+                  <th className="p-4 font-bold text-right">{lang === 'uz' ? "Harakatlar" : "Действия"}</th>
                 </tr>
               </thead>
               <tbody>
@@ -126,11 +144,29 @@ export default function YoshlarPage() {
                     <td className="p-4">
                       <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-bold bg-opacity-10 border-opacity-20
                         ${y.xavf === 'Yuqori xavf' ? 'bg-danger text-danger border-danger' : 
-                          y.xavf === 'O'rta xavf' ? 'bg-warning text-warning border-warning' 
+                          y.xavf === 'O'rta xavf' ? 'bg-warning text-warning border-warning' :
                           'bg-safe text-safe border-safe'}"
                       >
                         <span className={`w-1.5 h-1.5 rounded-full ${y.xavf === 'Yuqori xavf' ? 'bg-danger' : y.xavf === "O'rta xavf" ? 'bg-warning' : 'bg-safe'}`}></span>
                         {y.xavf}
+                      </div>
+                    </td>
+                    <td className="p-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button 
+                          onClick={() => handleEdit(y)}
+                          className="p-2 bg-card hover:bg-primary hover:text-white border border-card-border text-foreground/70 rounded-lg transition-colors"
+                          title={lang === 'uz' ? "Tahrirlash" : "Редактировать"}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(y.id)}
+                          className="p-2 bg-card hover:bg-danger hover:text-white border border-card-border text-foreground/70 rounded-lg transition-colors"
+                          title={lang === 'uz' ? "O'chirish" : "Удалить"}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -140,6 +176,15 @@ export default function YoshlarPage() {
           </div>
         )}
       </div>
-    </div >
+      
+      <AddYouthModal 
+        isOpen={editModalOpen} 
+        onClose={() => {
+          setEditModalOpen(false);
+          setEditingYouth(null);
+        }} 
+        editData={editingYouth} 
+      />
+    </div>
   );
 }

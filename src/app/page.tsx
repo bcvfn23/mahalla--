@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
-import { ShieldAlert, BrainCircuit, Activity, Map, ArrowRight } from "lucide-react";
+import { BrainCircuit, Activity, Map, ArrowRight } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import Image from "next/image";
 
 export default function LandingPage() {
   const { t, lang, setLang } = useI18n();
@@ -20,9 +20,11 @@ export default function LandingPage() {
       </div>
 
       {/* Header */}
-      <header className="relative z-10 flex items-center justify-between px-6 py-6 lg:px-12 border-b border-white/5 bg-background/50 backdrop-blur-md">
-        <div className="flex items-center gap-2">
-          <ShieldAlert className="h-8 w-8 text-primary glow-safe" />
+      <header className="relative z-10 flex items-center justify-between px-6 py-6 lg:px-12 border-b border-card-border bg-background/50 backdrop-blur-md">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg overflow-hidden border border-primary/30 shadow-[0_0_15px_rgba(14,165,233,0.4)] bg-card">
+            <Image src="/logo.png" alt="Safe Mahalla AI Logo" width={40} height={40} className="w-full h-full object-cover" />
+          </div>
           <span className="text-xl font-bold tracking-widest text-foreground drop-shadow-[0_0_10px_rgba(14,165,233,0.8)]">
             SAFE MAHALLA<span className="text-primary text-xs ml-1">AI</span>
           </span>
