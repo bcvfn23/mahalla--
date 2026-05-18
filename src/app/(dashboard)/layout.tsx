@@ -1,12 +1,36 @@
+"use client";
+
 import Sidebar from "@/components/layout/Sidebar";
 import TopNavbar from "@/components/layout/TopNavbar";
 import RightAISidebar from "@/components/layout/RightAISidebar";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const role = localStorage.getItem("userRole");
+    if (!role) {
+      router.push("/login");
+    } else {
+      setIsAuthenticated(true);
+    }
+  }, [router]);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="h-screen w-screen flex items-center justify-center bg-[#060b17]">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin shadow-[0_0_15px_rgba(6,182,212,0.5)]"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full w-full overflow-hidden">
       {/* Left Navigation Sidebar */}

@@ -2,9 +2,11 @@
 
 import { useI18n } from "@/lib/i18n";
 import { DownloadCloud, ShieldCheck, Moon, Bell, RefreshCw, Power } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function ProfilPage() {
   const { t, lang } = useI18n();
+  const router = useRouter();
 
   return (
     <div className="space-y-6">
@@ -31,7 +33,7 @@ export default function ProfilPage() {
             
             <h3 className="text-[10px] font-bold uppercase tracking-widest text-primary mb-1">MAS'UL SHAXS</h3>
             <h2 className="text-3xl font-black text-white mb-2">Tizim Boshqaruvchisi</h2>
-            <p className="text-sm text-foreground/60 mb-6">Mahalla Monitor Bosh Administratori</p>
+            <p className="text-sm text-foreground/60 mb-6">Safe Mahalla Bosh Administratori</p>
             
             <div className="flex flex-wrap gap-2">
               <span className="px-3 py-1 bg-[#1e3a8a]/30 text-[#93c5fd] border border-[#1e3a8a] rounded-full text-xs font-bold">1-toifa</span>
@@ -105,10 +107,18 @@ export default function ProfilPage() {
             </button>
           </div>
           
-          <button className="w-full glass-panel p-4 rounded-xl flex items-center justify-center gap-2 text-danger font-bold text-sm hover:bg-danger/10 border border-transparent hover:border-danger/30 transition-colors">
-             <Power className="w-4 h-4" />
-             {lang === 'uz' ? "Tizimdan chiqish" : "Выйти из системы"}
-          </button>
+          <div className="pt-4 border-t border-card-border">
+            <button 
+              onClick={() => {
+                localStorage.removeItem("userRole");
+                router.push("/");
+              }}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-danger/10 hover:bg-danger/20 text-danger rounded-xl font-bold transition-colors"
+            >
+              <Power className="w-4 h-4" />
+              {lang === 'uz' ? "Tizimdan chiqish" : "Выйти из системы"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

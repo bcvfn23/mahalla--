@@ -3,8 +3,11 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ShieldAlert, BrainCircuit, Activity, Map, ArrowRight } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 export default function LandingPage() {
+  const { t, lang, setLang } = useI18n();
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
       {/* Background Effects */}
@@ -25,11 +28,26 @@ export default function LandingPage() {
           </span>
         </div>
         <div className="flex items-center gap-4">
-          <Link href="/dashboard" className="text-sm font-medium text-white/70 hover:text-white transition-colors">
-            Войти в систему
-          </Link>
-          <Link href="/dashboard" className="px-5 py-2 text-sm font-medium text-white bg-primary/20 border border-primary/50 hover:bg-primary/30 rounded-full transition-all glow-safe">
-            Демонстрация
+          <div className="flex bg-[#0b1228] border border-card-border rounded-lg p-1 mr-4">
+            <button
+              onClick={() => setLang('uz')}
+              className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${
+                lang === 'uz' ? 'bg-primary text-white shadow-lg' : 'text-foreground/50 hover:text-white'
+              }`}
+            >
+              UZ
+            </button>
+            <button
+              onClick={() => setLang('ru')}
+              className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${
+                lang === 'ru' ? 'bg-primary text-white shadow-lg' : 'text-foreground/50 hover:text-white'
+              }`}
+            >
+              RU
+            </button>
+          </div>
+          <Link href="/login" className="text-sm font-medium text-white/70 hover:text-white transition-colors">
+            {t("landing.login")}
           </Link>
         </div>
       </header>
@@ -47,25 +65,24 @@ export default function LandingPage() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
               </span>
-              Next-Generation Government AI Technology
+              {t("landing.badge")}
             </div>
             
-            <h1 className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-primary mb-6 tracking-tight">
-              Интеллектуальная Аналитика <br className="hidden md:block" />
-              Безопасности Города
+            <h1 className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-primary mb-6 tracking-tight whitespace-pre-line">
+              {t("landing.title")}
             </h1>
             
             <p className="mt-6 text-lg md:text-xl text-white/60 max-w-3xl mx-auto mb-10 leading-relaxed">
-              Платформа предиктивной аналитики уровня Enterprise. Мониторинг преступности в реальном времени, выявление очагов опасности и генерация рекомендаций с помощью искусственного интеллекта для структур МВД и Smart City.
+              {t("landing.subtitle")}
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/dashboard" className="w-full sm:w-auto px-8 py-4 text-base font-medium text-white bg-primary rounded-lg hover:bg-primary/90 hover:shadow-[0_0_20px_rgba(14,165,233,0.5)] transition-all flex items-center justify-center gap-2">
-                Запустить Дашборд
+              <button className="w-full sm:w-auto px-8 py-4 text-base font-medium text-white bg-primary rounded-lg hover:bg-primary/90 hover:shadow-[0_0_20px_rgba(14,165,233,0.5)] transition-all flex items-center justify-center gap-2">
+                {t("landing.about")}
                 <ArrowRight className="h-4 w-4" />
-              </Link>
+              </button>
               <button className="w-full sm:w-auto px-8 py-4 text-base font-medium text-white bg-card border border-white/10 rounded-lg hover:bg-white/5 transition-all">
-                Документация API
+                {t("landing.api")}
               </button>
             </div>
           </motion.div>
@@ -78,9 +95,9 @@ export default function LandingPage() {
             className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 text-left pb-10"
           >
             {[
-              { icon: Map, title: "Интерактивный Heatmap", desc: "Визуализация зон риска и патрулирования на детализированной карте города.", color: "text-safe" },
-              { icon: BrainCircuit, title: "Предиктивный ИИ", desc: "Прогнозирование роста преступности на основе исторических данных и трендов.", color: "text-primary" },
-              { icon: Activity, title: "Мониторинг 24/7", desc: "Анализ данных в реальном времени с автоматической системой уведомлений.", color: "text-danger" }
+              { icon: Map, title: t("landing.feat1.title"), desc: t("landing.feat1.desc"), color: "text-safe" },
+              { icon: BrainCircuit, title: t("landing.feat2.title"), desc: t("landing.feat2.desc"), color: "text-primary" },
+              { icon: Activity, title: t("landing.feat3.title"), desc: t("landing.feat3.desc"), color: "text-danger" }
             ].map((feature, i) => (
               <div key={i} className="p-6 rounded-2xl bg-card/30 border border-white/5 backdrop-blur-sm hover:bg-card/50 transition-colors">
                 <div className="h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-4">

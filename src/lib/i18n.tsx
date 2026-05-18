@@ -33,8 +33,33 @@ const translations = {
     "topbar.search": "Izlash...",
     
     // Global
-    "global.app_name": "Mahalla Monitor",
+    "global.app_name": "Safe Mahalla",
     "global.version": "v5.0 - Asosiy",
+    
+    // Landing
+    "landing.title": "Shahar Xavfsizligining\nIntellektual Tahlili",
+    "landing.subtitle": "Enterprise darajasidagi bashoratli tahlil platformasi. Haqiqiy vaqtda jinoyatchilikni monitoring qilish, xavf o'choqlarini aniqlash va IIV hamda Smart City tuzilmalari uchun sun'iy intellekt yordamida tavsiyalar yaratish.",
+    "landing.login": "Tizimga kirish",
+    "landing.demo": "Namoyish",
+    "landing.badge": "Yangi avlod Davlat AI texnologiyasi",
+    "landing.about": "Loyiha haqida",
+    "landing.api": "API Hujjatlari",
+    "landing.feat1.title": "Interaktiv Heatmap",
+    "landing.feat1.desc": "Shahar xaritasida xavf va patrul zonalarini vizualizatsiya qilish.",
+    "landing.feat2.title": "Bashoratli AI",
+    "landing.feat2.desc": "Tarixiy ma'lumotlar va trendlar asosida jinoyatchilik o'sishini bashorat qilish.",
+    "landing.feat3.title": "24/7 Monitoring",
+    "landing.feat3.desc": "Avtomatik xabar berish tizimi bilan real vaqtda ma'lumotlarni tahlil qilish.",
+    
+    // AI Sidebar
+    "ai.title": "AI Assistent",
+    "ai.risk_title": "Xavf oshdi",
+    "ai.risk_desc": "Yunusobod tumanida so'nggi 48 soat ichida jinoyatchilik xavfi 14% ga o'sdi.",
+    "ai.hotspot_title": "Potensial o'choq",
+    "ai.hotspot_desc": "Chorsu bozori atrofida anomal faollik (o'g'rilik) aniqlandi.",
+    "ai.rec_title": "AI Tavsiyasi",
+    "ai.rec_desc": "Chilonzor tumanida tungi patrullar sonini 20% ga oshirish.",
+    "ai.status": "AI tizimi ma'lumotlarni real vaqtda tahlil qilmoqda",
   },
   ru: {
     // Sidebar
@@ -58,8 +83,33 @@ const translations = {
     "topbar.search": "Поиск...",
     
     // Global
-    "global.app_name": "Mahalla Monitor",
+    "global.app_name": "Safe Mahalla",
     "global.version": "v5.0 - Базовый",
+
+    // Landing
+    "landing.title": "Интеллектуальная Аналитика\nБезопасности Города",
+    "landing.subtitle": "Платформа предиктивной аналитики уровня Enterprise. Мониторинг преступности в реальном времени, выявление очагов опасности и генерация рекомендаций с помощью искусственного интеллекта для структур МВД и Smart City.",
+    "landing.login": "Войти в систему",
+    "landing.demo": "Демонстрация",
+    "landing.badge": "Next-Generation Government AI Technology",
+    "landing.about": "О проекте",
+    "landing.api": "Документация API",
+    "landing.feat1.title": "Интерактивный Heatmap",
+    "landing.feat1.desc": "Визуализация зон риска и патрулирования на детализированной карте города.",
+    "landing.feat2.title": "Предиктивный ИИ",
+    "landing.feat2.desc": "Прогнозирование роста преступности на основе исторических данных и трендов.",
+    "landing.feat3.title": "Мониторинг 24/7",
+    "landing.feat3.desc": "Анализ данных в реальном времени с автоматической системой уведомлений.",
+    
+    // AI Sidebar
+    "ai.title": "AI Ассистент",
+    "ai.risk_title": "Риск повышен",
+    "ai.risk_desc": "В Юнусабадском районе риск преступности вырос на 14% за последние 48 часов.",
+    "ai.hotspot_title": "Потенциальный очаг",
+    "ai.hotspot_desc": "Обнаружена аномальная активность вблизи рынка Чорсу (кражи).",
+    "ai.rec_title": "Рекомендация ИИ",
+    "ai.rec_desc": "Увеличить частоту ночных патрулей в Чиланзарском районе на 20%.",
+    "ai.status": "Система ИИ анализирует данные в реальном времени",
   }
 };
 

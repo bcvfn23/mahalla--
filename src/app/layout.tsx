@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Mahalla Monitor - Yoshlar nazorat tizimi",
+  title: "Safe Mahalla - Yoshlar nazorat tizimi",
   description: "Advanced monitoring and prediction platform.",
 };
 

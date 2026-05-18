@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
 import { 
@@ -20,6 +20,7 @@ import {
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { t } = useI18n();
 
   const navigation = {
@@ -113,7 +114,13 @@ export default function Sidebar() {
           </div>
         </div>
         
-        <button className="w-full mt-3 flex items-center gap-2 px-4 py-2 text-sm font-medium text-danger hover:bg-danger/10 rounded-lg transition-colors">
+        <button 
+          onClick={() => {
+            localStorage.removeItem("userRole");
+            router.push("/");
+          }}
+          className="w-full mt-3 flex items-center gap-2 px-4 py-2 text-sm font-medium text-danger hover:bg-danger/10 rounded-lg transition-colors"
+        >
           <LogOut className="w-4 h-4" />
           {t("nav.chiqish")}
         </button>
