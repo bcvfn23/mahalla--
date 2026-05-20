@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { ShieldCheck, Lock, User, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n";
 import React, { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");

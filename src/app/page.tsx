@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BrainCircuit, Activity, Map, ArrowRight } from "lucide-react";
+import { BrainCircuit, Activity, Map, ArrowRight, Link } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import Image from "next/image";
 
@@ -14,7 +14,7 @@ export default function LandingPage() {
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-safe/10 blur-[120px]" />
-        
+
         {/* Animated grid overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
       </div>
@@ -33,17 +33,15 @@ export default function LandingPage() {
           <div className="flex bg-card border border-card-border rounded-lg p-1 mr-4">
             <button
               onClick={() => setLang('uz')}
-              className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${
-                lang === 'uz' ? 'bg-primary text-white shadow-lg' : 'text-foreground/50 hover:text-foreground'
-              }`}
+              className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${lang === 'uz' ? 'bg-primary text-white shadow-lg' : 'text-foreground/50 hover:text-foreground'
+                }`}
             >
               UZ
             </button>
             <button
               onClick={() => setLang('ru')}
-              className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${
-                lang === 'ru' ? 'bg-primary text-white shadow-lg' : 'text-foreground/50 hover:text-foreground'
-              }`}
+              className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${lang === 'ru' ? 'bg-primary text-white shadow-lg' : 'text-foreground/50 hover:text-foreground'
+                }`}
             >
               RU
             </button>
@@ -69,11 +67,11 @@ export default function LandingPage() {
               </span>
               {t("landing.badge")}
             </div>
-            
+
             <h1 className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-foreground via-blue-400 to-primary mb-6 tracking-tight whitespace-pre-line">
               {t("landing.title")}
             </h1>
-            
+
             <p className="mt-6 text-lg md:text-xl text-foreground/60 max-w-3xl mx-auto mb-10 leading-relaxed">
               {t("landing.subtitle")}
             </p>
@@ -90,7 +88,7 @@ export default function LandingPage() {
           </motion.div>
 
           {/* Feature highlights */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
