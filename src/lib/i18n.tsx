@@ -17,9 +17,15 @@ const translations = {
     "nav.yoshlar": "Yoshlar",
     "nav.xarita": "Xarita",
     "nav.faollik": "Faollik",
+    "nav.huquqbuzarliklar": "Huquqbuzarliklar",
+    "nav.patrul": "Patrul Marshruti",
     "nav.rejalar": "Rejalar",
     "nav.kalendar": "Kalendar",
     "nav.statistika": "Statistika",
+    "nav.murojaatlar": "Murojaatlar",
+    "nav.yordam": "Ijtimoiy Yordam",
+    "nav.bandlik": "Bandlik",
+    "nav.tanlovlar": "Tadbirlar va Tanlovlar",
     "nav.ai_tahlil": "AI Tahlil",
     "nav.integratsiyalar": "Integratsiyalar",
     "nav.profil": "Profil",
@@ -33,12 +39,12 @@ const translations = {
     "topbar.search": "Izlash...",
     
     // Global
-    "global.app_name": "Safe Mahalla",
-    "global.version": "v5.0 - Asosiy",
+    "global.app_name": "Yoshlar Qalqoni",
+    "global.version": "v5.0 - Test",
     
     // Landing
     "landing.title": "Shahar Xavfsizligining\nIntellektual Tahlili",
-    "landing.subtitle": "Enterprise darajasidagi bashoratli tahlil platformasi. Haqiqiy vaqtda jinoyatchilikni monitoring qilish, xavf o'choqlarini aniqlash va IIV hamda Smart City tuzilmalari uchun sun'iy intellekt yordamida tavsiyalar yaratish.",
+    "landing.subtitle": "Sirdaryo viloyatidagi 10 ta mahalla bo‘yicha — mahalla yoshlar yetakchilari uchun uyushmagan, bandligi ta’minlanmagan va huquqbuzarlikka moyil yoshlarni erta aniqlash, ular bilan manzilli ishlash, ta’lim, kasb-hunar, bandlik va ijtimoiy foydali faoliyatga yo‘naltirish hamda huquqbuzarliklar profilaktikasini samarali tashkil etishga xizmat qiluvchi “Yoshlar qalqoni” ilmiy-diagnostik platformasi.",
     "landing.login": "Tizimga kirish",
     "landing.demo": "Namoyish",
     "landing.badge": "Yangi avlod Davlat AI texnologiyasi",
@@ -54,11 +60,11 @@ const translations = {
     // AI Sidebar
     "ai.title": "AI Assistent",
     "ai.risk_title": "Xavf oshdi",
-    "ai.risk_desc": "Yunusobod tumanida so'nggi 48 soat ichida jinoyatchilik xavfi 14% ga o'sdi.",
+    "ai.risk_desc": "Guliston shahrida so'nggi 48 soat ichida jinoyatchilik xavfi 14% ga o'sdi.",
     "ai.hotspot_title": "Potensial o'choq",
-    "ai.hotspot_desc": "Chorsu bozori atrofida anomal faollik (o'g'rilik) aniqlandi.",
+    "ai.hotspot_desc": "Dehqon bozori atrofida anomal faollik (o'g'rilik) aniqlandi.",
     "ai.rec_title": "AI Tavsiyasi",
-    "ai.rec_desc": "Chilonzor tumanida tungi patrullar sonini 20% ga oshirish.",
+    "ai.rec_desc": "Sirdaryo tumanida tungi patrullar sonini 20% ga oshirish.",
     "ai.status": "AI tizimi ma'lumotlarni real vaqtda tahlil qilmoqda",
 
     // Login
@@ -79,9 +85,15 @@ const translations = {
     "nav.yoshlar": "Молодежь",
     "nav.xarita": "Карта",
     "nav.faollik": "Активность",
+    "nav.huquqbuzarliklar": "Правонарушения",
+    "nav.patrul": "Маршрут Патруля",
     "nav.rejalar": "Планы",
     "nav.kalendar": "Календарь",
     "nav.statistika": "Статистика",
+    "nav.murojaatlar": "Обращения",
+    "nav.yordam": "Соц. Помощь",
+    "nav.bandlik": "Трудоустройство",
+    "nav.tanlovlar": "Мероприятия",
     "nav.ai_tahlil": "AI Анализ",
     "nav.integratsiyalar": "Интеграции",
     "nav.profil": "Профиль",
@@ -95,12 +107,12 @@ const translations = {
     "topbar.search": "Поиск...",
     
     // Global
-    "global.app_name": "Safe Mahalla",
-    "global.version": "v5.0 - Базовый",
+    "global.app_name": "Yoshlar Qalqoni",
+    "global.version": "v5.0 - Тест",
 
     // Landing
     "landing.title": "Интеллектуальная Аналитика\nБезопасности Города",
-    "landing.subtitle": "Платформа предиктивной аналитики уровня Enterprise. Мониторинг преступности в реальном времени, выявление очагов опасности и генерация рекомендаций с помощью искусственного интеллекта для структур МВД и Smart City.",
+    "landing.subtitle": "Научно-диагностическая платформа «Yoshlar qalqoni», предназначенная для молодежных лидеров 10 махаллей Сырдарьинской области в целях раннего выявления неорганизованной, безработной и склонной к правонарушениям молодежи, адресной работы с ней, направления на обучение, получение профессии, трудоустройство и общественно-полезную деятельность, а также для эффективной организации профилактики правонарушений.",
     "landing.login": "Войти в систему",
     "landing.demo": "Демонстрация",
     "landing.badge": "Next-Generation Government AI Technology",
@@ -116,11 +128,11 @@ const translations = {
     // AI Sidebar
     "ai.title": "AI Ассистент",
     "ai.risk_title": "Риск повышен",
-    "ai.risk_desc": "В Юнусабадском районе риск преступности вырос на 14% за последние 48 часов.",
+    "ai.risk_desc": "В г. Гулистан риск преступности вырос на 14% за последние 48 часов.",
     "ai.hotspot_title": "Потенциальный очаг",
-    "ai.hotspot_desc": "Обнаружена аномальная активность вблизи рынка Чорсу (кражи).",
+    "ai.hotspot_desc": "Обнаружена аномальная активность вблизи дехканского рынка (кражи).",
     "ai.rec_title": "Рекомендация ИИ",
-    "ai.rec_desc": "Увеличить частоту ночных патрулей в Чиланзарском районе на 20%.",
+    "ai.rec_desc": "Увеличить частоту ночных патрулей в Сырдарьинском районе на 20%.",
     "ai.status": "Система ИИ анализирует данные в реальном времени",
 
     // Login
@@ -143,10 +155,18 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<Language>("uz"); // Default to Uzbek as requested
 
   useEffect(() => {
+    let active = true;
     const savedLang = localStorage.getItem("lang") as Language;
     if (savedLang && (savedLang === "uz" || savedLang === "ru")) {
-      setLang(savedLang);
+      requestAnimationFrame(() => {
+        if (active) {
+          setLang(savedLang);
+        }
+      });
     }
+    return () => {
+      active = false;
+    };
   }, []);
 
   const changeLang = (newLang: Language) => {

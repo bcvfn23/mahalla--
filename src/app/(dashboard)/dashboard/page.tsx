@@ -1,50 +1,187 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useI18n } from "@/lib/i18n";
-import { 
-  ShieldAlert, 
-  TrendingDown, 
-  TrendingUp, 
-  Users, 
+import { useState, useEffect } from "react";
+import {
+  ShieldAlert,
+  TrendingDown,
+  TrendingUp,
+  Users,
   MapPin,
-  Activity
+  Activity,
+  Cpu,
+  Terminal,
+  Sparkles
 } from "lucide-react";
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer
 } from "recharts";
+import { useI18n } from "@/lib/i18n";
 
 const districtData = [
-  { uz: 'Yunusobod', ru: 'Юнусабадский', crimes: 120, severity: 'high' },
-  { uz: 'Olmazor', ru: 'Алмазарский', crimes: 98, severity: 'medium' },
-  { uz: "Mirzo Ulug'bek", ru: 'Мирзо-Улугбекский', crimes: 86, severity: 'medium' },
-  { uz: 'Chilonzor', ru: 'Чиланзарский', crimes: 145, severity: 'high' },
-  { uz: 'Mirobod', ru: 'Мирабадский', crimes: 45, severity: 'low' },
+  { uz: 'Guliston', ru: 'г. Гулистан', crimes: 120, severity: 'high' },
+  { uz: 'Oqoltin', ru: 'Акалтынский', crimes: 98, severity: 'medium' },
+  { uz: "Sirdaryo t.", ru: 'Сырдарьинский', crimes: 145, severity: 'high' },
+  { uz: 'Sayxunobod', ru: 'Сайхунабадский', crimes: 45, severity: 'low' },
+  { uz: 'Mirzaobod', ru: 'Мирзаабадский', crimes: 86, severity: 'medium' },
 ];
 
 export default function Dashboard() {
   const { lang } = useI18n();
+  const [stats, setStats] = useState({
+    totalIncidents: 0,
+    activeIncidents: 0,
+    safeIndex: 100,
+    activePatrols: 128
+  });
+  const [dynamicCrimeData, setDynamicCrimeData] = useState<any[]>([]);
+  const [dynamicDistrictData, setDynamicDistrictData] = useState<any[]>([]);
+  const [yearFilter, setYearFilter] = useState("current");
+  const [liveLogs, setLiveLogs] = useState<any[]>([]);
 
-  const crimeData = [
-    { name: lang === 'uz' ? 'Yan' : 'Янв', value: 400, risk: 240 },
-    { name: lang === 'uz' ? 'Fev' : 'Фев', value: 300, risk: 139 },
-    { name: lang === 'uz' ? 'Mar' : 'Мар', value: 200, risk: 980 },
-    { name: lang === 'uz' ? 'Apr' : 'Апр', value: 278, risk: 390 },
-    { name: lang === 'uz' ? 'May' : 'Май', value: 189, risk: 480 },
-    { name: lang === 'uz' ? 'Iyn' : 'Июн', value: 239, risk: 380 },
-    { name: lang === 'uz' ? 'Iyl' : 'Июл', value: 349, risk: 430 },
-  ];
+  // 24/7 AI Live monitoring simulator loop
+  useEffect(() => {
+    const initialLogs = [
+      { id: 1, type: "info", time: "23:54", msgUz: "AI model: Profilaktik xulq-atvor tahlili v2.4 ishga tushirildi.", msgRu: "ИИ модель: Профилактический анализ поведения v2.4 запущена." },
+      { id: 2, type: "warn", time: "23:51", msgUz: "Diqqat: Sayxunobod tumanida yoshlar davomati 5.2% ga pasayishi prognoz qilinmoqda.", msgRu: "Внимание: В Сайхунабадском районе прогнозируется снижение посещаемости на 5.2%." },
+      { id: 3, type: "ok", time: "23:48", msgUz: "Tizim holati: IIV, DTM va Maktab ma'lumotlar bazasi integratsiyasi muvaffaqiyatli yakunlandi.", msgRu: "Статус системы: Интеграция баз данных МВД, ГЦТ и школ успешно завершена." },
+    ];
+    setLiveLogs(initialLogs);
+
+    const logsFeed = [
+      { type: "info", msgUz: "AI: Guliston shahri bo'yicha sotsial portretlarni qayta ishlash boshlandi.", msgRu: "ИИ: Начата обработка социальных портретов по г. Гулистан." },
+      { type: "warn", msgUz: "Diqqat: Oqoltin tumanida yoshlar o'rtasida bandlik ko'rsatkichlarining anomaliyasi aniqlandi.", msgRu: "Внимание: В Акалтынском районе выявлена аномалия показателей занятости среди молодежи." },
+      { type: "ok", msgUz: "Taqdim etilgan tavsiyalar: 15 ta preventiv profilaktika suhbatlari muvaffaqiyatli rejalashtirildi.", msgRu: "Выданные рекомендации: Успешно запланировано 15 превентивных профилактических бесед." },
+      { type: "info", msgUz: "AI Core: Sirdaryo tumanida profilaktika inspektori patrullarini muvofiqlashtirish yangilandi.", msgRu: "AI Core: Обновлена координация патрулей инспектора профилактики в Сырдарьинском районе." },
+      { type: "warn", msgUz: "AI Signal: 3 nafar yuqori xavfli yoshlar guruhining koordinatalari mos tushishi qayd etildi.", msgRu: "ИИ Сигнал: Зафиксировано совпадение координат 3 молодых людей из группы высокого риска." }
+    ];
+
+    let logCounter = 4;
+    const interval = setInterval(() => {
+      const randomLog = logsFeed[Math.floor(Math.random() * logsFeed.length)];
+      const now = new Date();
+      const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+      
+      setLiveLogs(prev => {
+        const updated = [
+          { id: logCounter++, type: randomLog.type, time: timeStr, msgUz: randomLog.msgUz, msgRu: randomLog.msgRu },
+          ...prev
+        ];
+        if (updated.length > 5) updated.pop();
+        return updated;
+      });
+    }, 6000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const data = localStorage.getItem("incidentsList");
+    let incidents: any[] = [];
+    if (data) {
+      incidents = JSON.parse(data);
+    } else {
+      // Fallback if not initialized yet
+      incidents = [
+        { id: 1, status: "jarayonda", date: "2024-05-18 21:45" },
+        { id: 2, status: "ochiq", date: "2024-05-17 03:20" },
+        { id: 3, status: "yopilgan", date: "2024-05-16 19:10" },
+        { id: 4, status: "yopilgan", date: "2024-05-15 14:30" },
+      ];
+    }
+
+    const totalIncidents = incidents.length;
+    const activeIncidents = incidents.filter(i => i.status !== 'yopilgan').length;
+    // Mock safe index calculation based on active vs total
+    const safeIndex = totalIncidents > 0 ? Math.round(((totalIncidents - activeIncidents) / totalIncidents) * 100) : 100;
+
+    setStats({
+      totalIncidents,
+      activeIncidents,
+      safeIndex,
+      activePatrols: 128 // Hardcoded for now
+    });
+
+    // Mock dynamic chart data based on total incidents for demonstration
+    const baseLine = yearFilter === "current" ? totalIncidents * 10 : (totalIncidents * 10) + 150;
+    
+    setDynamicCrimeData([
+      { name: lang === 'uz' ? 'Yan' : 'Янв', value: baseLine + 10, risk: baseLine - 5 },
+      { name: lang === 'uz' ? 'Fev' : 'Фев', value: baseLine + 5, risk: baseLine + 15 },
+      { name: lang === 'uz' ? 'Mar' : 'Мар', value: baseLine + 20, risk: baseLine + 10 },
+      { name: lang === 'uz' ? 'Apr' : 'Апр', value: baseLine + 15, risk: baseLine + 5 },
+      { name: lang === 'uz' ? 'May' : 'Май', value: yearFilter === "current" ? totalIncidents : baseLine - 10, risk: yearFilter === "current" ? activeIncidents * 10 : baseLine + 20 },
+      { name: lang === 'uz' ? 'Iyn' : 'Июн', value: baseLine + 8, risk: baseLine - 2 },
+      { name: lang === 'uz' ? 'Iyl' : 'Июл', value: baseLine + 12, risk: baseLine + 8 },
+    ]);
+
+    // Load youth list to aggregate dynamic district rankings
+    const youthDataStr = localStorage.getItem("youthList");
+    let youthList: any[] = [];
+    if (youthDataStr) {
+      youthList = JSON.parse(youthDataStr);
+    }
+
+    // Base district data
+    const baseDistricts = [
+      { uz: 'Guliston', ru: 'г. Гулистан', crimes: 120, severity: 'high' },
+      { uz: 'Oqoltin', ru: 'Акалтынский', crimes: 98, severity: 'medium' },
+      { uz: "Sirdaryo t.", ru: 'Сырдарьинский', crimes: 145, severity: 'high' },
+      { uz: 'Sayxunobod', ru: 'Сайхунабадский', crimes: 45, severity: 'low' },
+      { uz: 'Mirzaobod', ru: 'Мирзаабадский', crimes: 86, severity: 'medium' },
+    ];
+
+    // Map and aggregate custom youth risk profiles
+    youthList.forEach(youth => {
+      const mahalla = (youth.mahalla || "").toLowerCase();
+      let targetUz = "Guliston";
+      
+      if (mahalla.includes("abay") || mahalla.includes("абай")) {
+        targetUz = "Guliston";
+      } else if (mahalla.includes("dilbuloq") || mahalla.includes("дилбулок")) {
+        targetUz = "Oqoltin";
+      } else if (mahalla.includes("oqtepa") || mahalla.includes("октепа")) {
+        targetUz = "Sirdaryo t.";
+      }
+      
+      const district = baseDistricts.find(d => d.uz === targetUz);
+      if (district) {
+        const xavf = (youth.xavf || "").toLowerCase();
+        let addedCrimes = 5;
+        if (xavf.includes("yuqori") || xavf.includes("высокий")) {
+          addedCrimes = 25;
+        } else if (xavf.includes("o'rta") || xavf.includes("средний")) {
+          addedCrimes = 15;
+        }
+        district.crimes += addedCrimes;
+      }
+    });
+
+    // Re-evaluate severity after additions
+    baseDistricts.forEach(d => {
+      if (d.crimes >= 130) {
+        d.severity = 'high';
+      } else if (d.crimes >= 80) {
+        d.severity = 'medium';
+      } else {
+        d.severity = 'low';
+      }
+    });
+
+    setDynamicDistrictData(baseDistricts);
+
+  }, [lang, yearFilter]);
 
   const kpiCards = [
     {
       title: lang === 'uz' ? "Jami insidentlar" : "Всего инцидентов",
-      value: "2,543",
+      value: stats.totalIncidents.toString(),
       change: "+12.5%",
       trend: "up",
       icon: ShieldAlert,
@@ -53,7 +190,7 @@ export default function Dashboard() {
     },
     {
       title: lang === 'uz' ? "Xavfsizlik indeksi" : "Индекс безопасности",
-      value: "84/100",
+      value: `${stats.safeIndex}/100`,
       change: "+2.4%",
       trend: "up",
       icon: Activity,
@@ -61,8 +198,8 @@ export default function Dashboard() {
       bg: "bg-safe/10",
     },
     {
-      title: lang === 'uz' ? "Xavfli tumanlar" : "Опасные районы",
-      value: "4",
+      title: lang === 'uz' ? "Faol (Ochiq) ishlar" : "Активные (Открытые) дела",
+      value: stats.activeIncidents.toString(),
       change: "-1",
       trend: "down",
       icon: MapPin,
@@ -71,7 +208,7 @@ export default function Dashboard() {
     },
     {
       title: lang === 'uz' ? "Faol patrullar" : "Активные патрули",
-      value: "128",
+      value: stats.activePatrols.toString(),
       change: "+14",
       trend: "up",
       icon: Users,
@@ -87,7 +224,7 @@ export default function Dashboard() {
           {lang === 'uz' ? "Tizim sharhi" : "Обзор системы"}
         </h1>
         <p className="text-sm text-foreground/60 mt-1">
-          {lang === 'uz' ? "Haqiqiy vaqtda jinoyatchilik tahlili (Toshkent sh.)" : "Аналитика преступности в реальном времени (Г. Ташкент)"}
+          {lang === 'uz' ? "Haqiqiy vaqtda jinoyatchilik tahlili (Sirdaryo v.)" : "Аналитика преступности в реальном времени (Сырдарьинская обл.)"}
         </p>
       </div>
 
@@ -104,7 +241,7 @@ export default function Dashboard() {
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               <card.icon className={`h-24 w-24 ${card.color}`} />
             </div>
-            
+
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-sm font-medium text-foreground/70">{card.title}</p>
@@ -127,7 +264,7 @@ export default function Dashboard() {
       {/* Charts Area */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Chart */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.4 }}
@@ -137,28 +274,32 @@ export default function Dashboard() {
             <h2 className="text-lg font-bold text-foreground">
               {lang === 'uz' ? "Jinoyatchilik dinamikasi" : "Динамика преступности"}
             </h2>
-            <select className="bg-card border border-card-border text-foreground text-sm rounded-lg focus:ring-primary focus:border-primary block p-2 outline-none">
-              <option>{lang === 'uz' ? "Joriy yil" : "Текущий год"}</option>
-              <option>{lang === 'uz' ? "O'tgan yil" : "Прошлый год"}</option>
+            <select 
+              value={yearFilter}
+              onChange={(e) => setYearFilter(e.target.value)}
+              className="bg-card border border-card-border text-foreground text-sm rounded-lg focus:ring-primary focus:border-primary block p-2 outline-none"
+            >
+              <option value="current">{lang === 'uz' ? "Joriy yil" : "Текущий год"}</option>
+              <option value="past">{lang === 'uz' ? "O'tgan yil" : "Прошлый год"}</option>
             </select>
           </div>
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={crimeData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+              <AreaChart data={dynamicCrimeData.length > 0 ? dynamicCrimeData : [{ name: 'Jan', value: 0, risk: 0 }]} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="var(--primary)" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="colorRisk" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--danger)" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="var(--danger)" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="var(--danger)" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="var(--danger)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                 <XAxis dataKey="name" stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'rgba(51, 65, 85, 0.5)', borderRadius: '8px' }}
                   itemStyle={{ color: '#e2e8f0' }}
                 />
@@ -170,7 +311,7 @@ export default function Dashboard() {
         </motion.div>
 
         {/* Secondary Chart / List */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 }}
@@ -181,15 +322,15 @@ export default function Dashboard() {
               {lang === 'uz' ? "Xavf bo'yicha top tumanlar" : "Топ районов по риску"}
             </h2>
           </div>
-          
+
           <div className="flex-1 overflow-y-auto pr-2 space-y-4">
-            {districtData.sort((a, b) => b.crimes - a.crimes).map((district, i) => (
+            {dynamicDistrictData.sort((a, b) => b.crimes - a.crimes).map((district, i) => (
               <div key={district.uz} className="flex items-center justify-between p-3 rounded-lg bg-card/30 border border-card-border/50 hover:bg-card/60 transition-colors">
                 <div className="flex items-center gap-3">
                   <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold
-                    ${district.severity === 'high' ? 'bg-danger/20 text-danger border border-danger/30' : 
-                      district.severity === 'medium' ? 'bg-warning/20 text-warning border border-warning/30' : 
-                      'bg-safe/20 text-safe border border-safe/30'}`}
+                    ${district.severity === 'high' ? 'bg-danger/20 text-danger border border-danger/30' :
+                      district.severity === 'medium' ? 'bg-warning/20 text-warning border border-warning/30' :
+                        'bg-safe/20 text-safe border border-safe/30'}`}
                   >
                     {i + 1}
                   </div>
@@ -199,9 +340,9 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className={`px-2 py-1 rounded text-xs font-medium
-                  ${district.severity === 'high' ? 'text-danger bg-danger/10' : 
-                    district.severity === 'medium' ? 'text-warning bg-warning/10' : 
-                    'text-safe bg-safe/10'}`}
+                  ${district.severity === 'high' ? 'text-danger bg-danger/10' :
+                    district.severity === 'medium' ? 'text-warning bg-warning/10' :
+                      'text-safe bg-safe/10'}`}
                 >
                   {district.severity === 'high' ? (lang === 'uz' ? 'Kritik' : 'Критично') : district.severity === 'medium' ? (lang === 'uz' ? 'Diqqat' : 'Внимание') : (lang === 'uz' ? "Me'yor" : 'Норма')}
                 </div>
@@ -210,6 +351,56 @@ export default function Dashboard() {
           </div>
         </motion.div>
       </div>
+
+      {/* 24/7 AI Predictive Monitoring Console */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="glass-panel p-6 rounded-2xl relative overflow-hidden"
+      >
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full filter blur-3xl -z-10"></div>
+        <div className="flex items-center justify-between mb-6 pb-4 border-b border-card-border/50">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 text-primary rounded-xl border border-primary/20 animate-pulse">
+              <Cpu className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-[10px] font-bold uppercase tracking-widest text-primary/70 mb-0.5">Real-Time AI Core</h3>
+              <h2 className="text-lg font-bold text-foreground">{lang === 'uz' ? "Bashoratli AI va 24/7 Monitoring Konsoli" : "Предиктивный ИИ и консоль мониторинга 24/7"}</h2>
+            </div>
+          </div>
+          <span className="flex items-center gap-1.5 px-3 py-1 bg-safe/10 text-safe text-[10px] font-mono font-bold uppercase rounded-lg border border-safe/20 tracking-wider">
+            <span className="w-2 h-2 rounded-full bg-safe animate-ping" />
+            Live Sync
+          </span>
+        </div>
+
+        <div className="space-y-3 font-mono text-xs max-h-[300px] overflow-y-auto pr-1">
+          {liveLogs.map((log) => (
+            <div 
+              key={log.id} 
+              className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all duration-300 ${
+                log.type === 'warn' ? 'bg-danger/5 border-danger/20 text-danger' : 
+                log.type === 'ok' ? 'bg-safe/5 border-safe/20 text-safe' : 
+                'bg-primary/5 border-primary/20 text-primary'
+              }`}
+            >
+              <span className="text-foreground/45 font-bold shrink-0">[{log.time}]</span>
+              <span className={`font-black uppercase shrink-0 ${
+                log.type === 'warn' ? 'text-danger' : 
+                log.type === 'ok' ? 'text-safe' : 
+                'text-primary'
+              }`}>
+                {log.type === 'warn' ? 'WARN' : log.type === 'ok' ? 'OK' : 'INFO'}
+              </span>
+              <p className="text-foreground/80 leading-relaxed">
+                {lang === 'uz' ? log.msgUz : log.msgRu}
+              </p>
+            </div>
+          ))}
+        </div>
+      </motion.div>
     </div>
   );
 }

@@ -5,14 +5,15 @@ import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n";
 import React, { useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const router = useRouter();
   const { t, lang } = useI18n();
+  const { login } = useAuth();
 
   // Load saved username if "Remember me" was previously checked
   React.useEffect(() => {
@@ -26,17 +27,18 @@ export default function LoginPage() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Mock Users
-    const users = [
-      { user: "admin", pass: "123", role: "Tizim Boshqaruvchisi" },
-      { user: "user", pass: "123", role: "Foydalanuvchi" },
-      { user: "mehmon", pass: "123", role: "Kuzatuvchi" }
+    // Mock Users for different RBAC roles
+    const mockUsers = [
+      { username: "admin", pass: "123", role: "admin", name: "Yoshlar Qalqoni", avatar: "YQ" },
+      { username: "uchastkavoy", pass: "123", role: "uchastkavoy", name: "Mahalla Uchastkavoyi", avatar: "UC" },
+      { username: "rais", pass: "123", role: "raisi", name: "Mahalla Raisi", avatar: "MR" },
+      { username: "yetakchi", pass: "123", role: "yetakchi", name: "Yoshlar Yetakchisi", avatar: "YY" },
     ];
 
-    const validUser = users.find(u => u.user === username && u.pass === password);
+    const validUser = mockUsers.find(u => u.username === username && u.pass === password);
 
     if (validUser) {
-      toast.success(`${t("login.success")}, ${validUser.role}!`);
+      toast.success(`${t("login.success")}, ${validUser.name}!`);
 
       if (rememberMe) {
         localStorage.setItem("rememberedUsername", username);
@@ -44,8 +46,13 @@ export default function LoginPage() {
         localStorage.removeItem("rememberedUsername");
       }
 
-      localStorage.setItem("userRole", validUser.role);
-      router.push("/dashboard");
+      login({
+        username: validUser.username,
+        role: validUser.role as any,
+        name: validUser.name,
+        avatar: validUser.avatar
+      }, rememberMe);
+
     } else {
       toast.error(t("login.error"));
     }
@@ -60,9 +67,9 @@ export default function LoginPage() {
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl border border-primary/30 shadow-[0_0_20px_rgba(14,165,233,0.3)] mb-6 overflow-hidden bg-card">
-            <Image src="/logo.png" alt="Safe Mahalla AI Logo" width={80} height={80} className="w-full h-full object-cover" />
+            <Image src="/logo.png" alt="Yoshlar Qalqoni AI Logo" width={80} height={80} className="w-full h-full object-cover" />
           </div>
-          <h1 className="text-3xl font-black text-foreground tracking-tight mb-2">Safe Mahalla</h1>
+          <h1 className="text-3xl font-black text-foreground tracking-tight mb-2">Yoshlar Qalqoni</h1>
           <p className="text-foreground/60 text-sm">{t("login.subtitle")}</p>
         </div>
 

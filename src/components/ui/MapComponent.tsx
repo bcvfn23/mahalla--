@@ -23,9 +23,22 @@ const hotspots = [
 
 export default function MapComponent() {
   const [mounted, setMounted] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
 
   useEffect(() => {
     setMounted(true);
+    
+    // Check initial theme from documentElement
+    const isLight = document.documentElement.classList.contains("light");
+    setTheme(isLight ? "light" : "dark");
+
+    const handleThemeChange = () => {
+      const isLightNow = document.documentElement.classList.contains("light");
+      setTheme(isLightNow ? "light" : "dark");
+    };
+
+    window.addEventListener("themeChanged", handleThemeChange);
+    return () => window.removeEventListener("themeChanged", handleThemeChange);
   }, []);
 
   if (!mounted) {
@@ -41,11 +54,14 @@ export default function MapComponent() {
         zoom={12} 
         style={{ height: '100%', width: '100%' }}
         zoomControl={false}
+        attributionControl={false}
       >
-        {/* Dark theme tiles (CartoDB Dark Matter) */}
+        {/* Dynamic theme tiles switcher (CartoDB Light Matter vs CartoDB Dark Matter) */}
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          key={theme}
+          url={theme === "light"
+            ? "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+            : "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"}
         />
         
         {hotspots.map((spot) => {

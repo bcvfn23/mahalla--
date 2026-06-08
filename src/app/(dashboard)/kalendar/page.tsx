@@ -92,9 +92,9 @@ export default function KalendarPage() {
           </div>
 
           <div className="flex gap-4 mt-8 pt-6 border-t border-card-border/50">
-             <span className="flex items-center gap-2 text-xs font-bold px-3 py-1 rounded bg-[#0b2b4d] text-primary"><div className="w-2 h-2 bg-primary rounded-full"/>Uchrashuv</span>
-             <span className="flex items-center gap-2 text-xs font-bold px-3 py-1 rounded bg-[#0b3323] text-safe"><div className="w-2 h-2 bg-safe rounded-full"/>Tadbir</span>
-             <span className="flex items-center gap-2 text-xs font-bold px-3 py-1 rounded bg-[#3b1219] text-danger"><div className="w-2 h-2 bg-danger rounded-full"/>Muddat</span>
+             <span className="flex items-center gap-2 text-xs font-bold px-3 py-1 rounded bg-primary/10 border border-primary/20 text-primary"><div className="w-2 h-2 bg-primary rounded-full"/>Uchrashuv</span>
+             <span className="flex items-center gap-2 text-xs font-bold px-3 py-1 rounded bg-safe/10 border border-safe/20 text-safe"><div className="w-2 h-2 bg-safe rounded-full"/>Tadbir</span>
+             <span className="flex items-center gap-2 text-xs font-bold px-3 py-1 rounded bg-danger/10 border border-danger/20 text-danger"><div className="w-2 h-2 bg-danger rounded-full"/>Muddat</span>
           </div>
         </div>
 
@@ -119,7 +119,7 @@ export default function KalendarPage() {
               {dayEvents.map(ev => {
                 const style = getEventStyle(ev.type);
                 return (
-                  <div key={ev.id} className={`p-4 rounded-xl border border-l-4 bg-[#0d152e] relative group ${style.border}`}>
+                  <div key={ev.id} className={`p-4 rounded-xl border border-l-4 bg-background/40 dark:bg-[#0d152e] relative group ${style.border}`}>
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-sm">{style.icon}</span>
                       <span className="text-xs font-bold uppercase tracking-wider">{style.name}</span>

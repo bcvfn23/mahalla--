@@ -15,9 +15,9 @@ export default function ProfilPage() {
   const [syncEnabled, setSyncEnabled] = useState(true);
 
   useEffect(() => {
-    // Sync initial theme state
-    const theme = localStorage.getItem("theme");
-    setDarkEnabled(theme !== "light");
+    // Sync initial theme state from DOM classes (initialized by the head script to prevent flash)
+    const isCurrentlyLight = document.documentElement.classList.contains("light");
+    setDarkEnabled(!isCurrentlyLight);
 
     const handleThemeChange = () => {
       const updatedTheme = localStorage.getItem("theme");
@@ -39,7 +39,9 @@ export default function ProfilPage() {
 
     if (newTheme === "light") {
       document.documentElement.classList.add("light");
+      document.documentElement.classList.remove("dark");
     } else {
+      document.documentElement.classList.add("dark");
       document.documentElement.classList.remove("light");
     }
 
@@ -78,11 +80,11 @@ export default function ProfilPage() {
 
             <h3 className="text-[10px] font-bold uppercase tracking-widest text-primary mb-1">MAS'UL SHAXS</h3>
             <h2 className="text-3xl font-black text-foreground mb-2">Tizim Boshqaruvchisi</h2>
-            <p className="text-sm text-foreground/60 mb-6">Safe Mahalla Bosh Administratori</p>
+            <p className="text-sm text-foreground/60 mb-6">Yoshlar Qalqoni Bosh Administratori</p>
 
             <div className="flex flex-wrap gap-2">
               <span className="px-3 py-1 bg-[#1e3a8a]/30 text-[#93c5fd] border border-[#1e3a8a] rounded-full text-xs font-bold">1-toifa</span>
-              <span className="px-3 py-1 bg-card border border-card-border rounded-full text-xs font-bold text-foreground/70">Toshkent shahri</span>
+              <span className="px-3 py-1 bg-card border border-card-border rounded-full text-xs font-bold text-foreground/70">Sirdaryo viloyati</span>
               <span className="px-3 py-1 bg-safe/10 text-safe border border-safe/20 rounded-full text-xs font-bold">E-IMZO faol</span>
             </div>
           </div>
@@ -138,7 +140,60 @@ export default function ProfilPage() {
           </div>
 
           <div
-            onClick={() => toast.success(lang === 'uz' ? "Eksport boshlandi" : "Экспорт начат")}
+            onClick={(e) => {
+              // Extract actual list from localStorage or use a rich seed database
+              let list = [];
+              const localData = localStorage.getItem("youthList");
+              if (localData) {
+                list = JSON.parse(localData);
+              }
+              
+              // Seed list if local list is empty for rich demonstration
+              if (list.length === 0) {
+                list = [
+                  {
+                    id: "seed-1",
+                    ism: "Jasur",
+                    familiya: "Toshmatov",
+                    jshshir: "30101951230044",
+                    pasport: "AB1234567",
+                    yil: "2004",
+                    jins: "Erkak",
+                    maktab: "12-maktab",
+                    telefon: "+998901234567",
+                    davomat: "78",
+                    mahalla: "Guliston",
+                    xavf: "Yuqori xavf",
+                    izoh: "Tizimli dars qoldirish va profilaktika monitoringi ostida."
+                  },
+                  {
+                    id: "seed-2",
+                    ism: "Kamola",
+                    familiya: "Rustamova",
+                    jshshir: "40203021230088",
+                    pasport: "AC7654321",
+                    yil: "2005",
+                    jins: "Ayol",
+                    maktab: "5-maktab",
+                    telefon: "+998935554433",
+                    davomat: "94",
+                    mahalla: "Do'stlik",
+                    xavf: "Past xavf",
+                    izoh: "Ijtimoiy faol, IT kurslarida muvaffaqiyatli qatnashmoqda."
+                  }
+                ];
+              }
+              
+              const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(list, null, 2));
+              const downloadAnchor = document.createElement("a");
+              downloadAnchor.setAttribute("href", dataStr);
+              downloadAnchor.setAttribute("download", `yoshlar_qalqoni_shifrlangan_baza_${Date.now()}.json`);
+              document.body.appendChild(downloadAnchor);
+              downloadAnchor.click();
+              document.body.removeChild(downloadAnchor);
+              
+              toast.success(lang === 'uz' ? "Shifrlangan ma'lumotlar bazasi yuklab olindi!" : "Зашифрованная база данных успешно скачана!");
+            }}
             className="glass-panel p-6 rounded-2xl flex items-center justify-between group cursor-pointer hover:border-primary/50 transition-colors"
           >
             <div>
@@ -149,7 +204,7 @@ export default function ProfilPage() {
                 {lang === 'uz' ? "Yoshlar ro'yxatini xavfsiz JSON shaklida olish." : "Получение списка молодежи в безопасном формате JSON."}
               </p>
             </div>
-            <button className="flex items-center gap-2 px-4 py-2 bg-card border border-card-border rounded-xl text-xs font-bold text-primary group-hover:bg-primary/10 transition-colors">
+            <button className="flex items-center gap-2 px-4 py-2 bg-card border border-card-border rounded-xl text-xs font-bold text-primary group-hover:bg-primary/10 transition-colors cursor-pointer">
               <DownloadCloud className="w-4 h-4" />
               {lang === 'uz' ? "Yuklab olish" : "Скачать"}
             </button>

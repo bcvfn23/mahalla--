@@ -5,6 +5,8 @@ import TopNavbar from "@/components/layout/TopNavbar";
 import RightAISidebar from "@/components/layout/RightAISidebar";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth";
+import { initializeYouthDatabase } from "@/lib/dbInit";
 
 export default function DashboardLayout({
   children,
@@ -12,20 +14,20 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { user, isLoading } = useAuth();
 
   useEffect(() => {
-    const role = localStorage.getItem("userRole");
-    if (!role) {
-      router.push("/login");
-    } else {
-      setIsAuthenticated(true);
+    if (!isLoading && !user) {
+      router.push("/");
+    } else if (user) {
+      // Auto seed 50 youth profiles and connections
+      initializeYouthDatabase();
     }
-  }, [router]);
+  }, [user, isLoading, router]);
 
-  if (!isAuthenticated) {
+  if (isLoading || !user) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-[#060b17]">
+      <div className="h-screen w-screen flex items-center justify-center bg-background">
         <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin shadow-[0_0_15px_rgba(6,182,212,0.5)]"></div>
       </div>
     );

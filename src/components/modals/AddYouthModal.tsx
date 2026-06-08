@@ -5,15 +5,32 @@ import { X, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+export interface YouthData {
+  id?: string;
+  ism: string;
+  familiya: string;
+  jshshir: string;
+  pasport: string;
+  yil: string;
+  jins: string;
+  maktab: string;
+  telefon: string;
+  davomat: string;
+  mahalla: string;
+  xavf: string;
+  izoh: string;
+  createdAt?: string;
+}
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  editData?: any;
+  editData?: YouthData | null;
 }
 
 export default function AddYouthModal({ isOpen, onClose, editData }: Props) {
-  const { t, lang } = useI18n();
-  const [formData, setFormData] = useState({
+  const { lang } = useI18n();
+  const [formData, setFormData] = useState<YouthData>({
     ism: "",
     familiya: "",
     jshshir: "",
@@ -41,21 +58,28 @@ export default function AddYouthModal({ isOpen, onClose, editData }: Props) {
 
   // Set initial data if editing
   useEffect(() => {
-    if (isOpen && editData) {
-      setFormData(editData);
-    } else if (isOpen && !editData) {
-      setFormData({ ism: "", familiya: "", jshshir: "", pasport: "", yil: "", jins: "", maktab: "", telefon: "", davomat: "", mahalla: "", xavf: "", izoh: "" });
-    }
+    let active = true;
+    requestAnimationFrame(() => {
+      if (!active) return;
+      if (isOpen && editData) {
+        setFormData(editData);
+      } else if (isOpen && !editData) {
+        setFormData({ ism: "", familiya: "", jshshir: "", pasport: "", yil: "", jins: "", maktab: "", telefon: "", davomat: "", mahalla: "", xavf: "", izoh: "" });
+      }
+    });
+    return () => {
+      active = false;
+    };
   }, [isOpen, editData]);
 
   if (!isOpen) return null;
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     // Save to localStorage
@@ -63,7 +87,7 @@ export default function AddYouthModal({ isOpen, onClose, editData }: Props) {
     let existingList = existingStr ? JSON.parse(existingStr) : [];
     
     if (editData) {
-      existingList = existingList.map((item: any) => item.id === editData.id ? { ...formData, id: editData.id, createdAt: item.createdAt } : item);
+      existingList = existingList.map((item: YouthData) => item.id === editData.id ? { ...formData, id: editData.id, createdAt: item.createdAt } : item);
       toast.success(lang === 'uz' ? "Muvaffaqiyatli yangilandi!" : "Успешно обновлено!");
     } else {
       const newEntry = {
