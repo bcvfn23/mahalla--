@@ -28,7 +28,7 @@ const rolePermissions: Record<string, string[]> = {
   ]
 };
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const token = request.cookies.get("access_token")?.value;
 
