@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { cookies } from "next/headers";
 import { verifyRefreshToken } from "@/lib/jwt";
+import { logActivity } from "@/lib/audit";
 import crypto from "crypto";
 
 
@@ -15,6 +16,15 @@ export async function POST(req: Request) {
     if (refreshToken) {
       const payload = await verifyRefreshToken(refreshToken);
       if (payload && payload.id) {
+        const ipAddress = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "127.0.0.1";
+        
+        await logActivity(
+          payload.id,
+          "USER_LOGOUT",
+          { message: "Logged out successfully", all },
+          ipAddress
+        );
+
         if (all) {
           // Revoke all sessions for this user
           await prisma.session.deleteMany({

@@ -13,17 +13,26 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-// Mock hotspot data for Tashkent
-const hotspots = [
-  { id: 1, lat: 41.311081, lng: 69.240562, intensity: 'high', title: 'Очаг краж', district: 'Шайхантахурский' },
-  { id: 2, lat: 41.364536, lng: 69.284451, intensity: 'medium', title: 'Хулиганство', district: 'Юнусабадский' },
-  { id: 3, lat: 41.282837, lng: 69.208170, intensity: 'high', title: 'Угоны авто', district: 'Чиланзарский' },
-  { id: 4, lat: 41.296561, lng: 69.274352, intensity: 'low', title: 'Мелкие кражи', district: 'Мирабадский' },
+const mahallaCoords: Record<string, { lat: number, lng: number }> = {
+  "guliston": { lat: 40.489, lng: 68.784 },
+  "do'stlik": { lat: 40.495, lng: 68.790 },
+  "navro'z": { lat: 40.482, lng: 68.775 },
+  "shirin": { lat: 40.485, lng: 68.795 },
+  "oqdaryo": { lat: 40.498, lng: 68.765 },
+  "yangiyer": { lat: 40.478, lng: 68.805 },
+};
+
+// Sirdaryo / Guliston fallback hotspots
+const fallbackHotspots = [
+  { id: "fb1", lat: 40.489, lng: 68.784, intensity: 'high', title: 'Очаг краж', district: 'Гулистан' },
+  { id: "fb2", lat: 40.495, lng: 68.790, intensity: 'medium', title: 'Хулиганство', district: 'Дустлик' },
+  { id: "fb3", lat: 40.482, lng: 68.775, intensity: 'high', title: 'Угоны авто', district: 'Навруз' },
 ];
 
 export default function MapComponent() {
   const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [hotspots, setHotspots] = useState<any[]>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -38,7 +47,50 @@ export default function MapComponent() {
     };
 
     window.addEventListener("themeChanged", handleThemeChange);
-    return () => window.removeEventListener("themeChanged", handleThemeChange);
+
+    // Fetch live incidents from database and map to coordinates
+    const fetchLiveIncidents = async () => {
+      try {
+        const res = await fetch("/api/incidents");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.items) {
+            const mapped = data.items.map((inc: any, index: number) => {
+              const locationStr = (inc.locationUz || "").toLowerCase();
+              let coords = { lat: 40.489 + (index * 0.003 - 0.005), lng: 68.784 + (index * 0.004 - 0.006) };
+              let districtName = "Guliston";
+              
+              for (const [key, val] of Object.entries(mahallaCoords)) {
+                if (locationStr.includes(key)) {
+                  coords = val;
+                  districtName = key.charAt(0).toUpperCase() + key.slice(1);
+                  break;
+                }
+              }
+              
+              return {
+                id: inc.id,
+                lat: coords.lat,
+                lng: coords.lng,
+                intensity: inc.severity === "high" ? "high" : inc.severity === "medium" ? "medium" : "low",
+                title: inc.typeUz || inc.name,
+                district: districtName
+              };
+            });
+            setHotspots(mapped.length > 0 ? mapped : fallbackHotspots);
+          }
+        }
+      } catch (err) {
+        console.error("Map fetch incidents error:", err);
+        setHotspots(fallbackHotspots);
+      }
+    };
+
+    fetchLiveIncidents();
+
+    return () => {
+      window.removeEventListener("themeChanged", handleThemeChange);
+    };
   }, []);
 
   if (!mounted) {
@@ -50,8 +102,8 @@ export default function MapComponent() {
   return (
     <div className="w-full h-[600px] rounded-2xl overflow-hidden border border-card-border shadow-[0_0_30px_rgba(15,23,42,0.8)] relative z-0">
       <MapContainer 
-        center={[41.311081, 69.240562]} // Tashkent center
-        zoom={12} 
+        center={[40.489, 68.784]} // Guliston center
+        zoom={13} 
         style={{ height: '100%', width: '100%' }}
         zoomControl={false}
         attributionControl={false}
@@ -83,8 +135,12 @@ export default function MapComponent() {
               <Popup className="custom-popup">
                 <div className="p-1">
                   <h3 className="font-bold text-sm text-gray-900">{spot.title}</h3>
-                  <p className="text-xs text-gray-600 mt-1">Район: {spot.district}</p>
-                  <div className="mt-2 text-xs font-medium px-2 py-1 bg-red-100 text-red-800 rounded inline-block">
+                  <p className="text-xs text-gray-600 mt-1">Район/Махалля: {spot.district}</p>
+                  <div className={`mt-2 text-xs font-medium px-2 py-1 rounded inline-block ${
+                    spot.intensity === 'high' ? 'bg-red-100 text-red-800' :
+                    spot.intensity === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-green-100 text-green-800'
+                  }`}>
                     Риск: {spot.intensity === 'high' ? 'Критический' : spot.intensity === 'medium' ? 'Средний' : 'Низкий'}
                   </div>
                 </div>
