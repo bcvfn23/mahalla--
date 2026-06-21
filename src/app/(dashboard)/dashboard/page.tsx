@@ -82,100 +82,35 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    const data = localStorage.getItem("incidentsList");
-    let incidents: any[] = [];
-    if (data) {
-      incidents = JSON.parse(data);
-    } else {
-      // Fallback if not initialized yet
-      incidents = [
-        { id: 1, status: "jarayonda", date: "2024-05-18 21:45" },
-        { id: 2, status: "ochiq", date: "2024-05-17 03:20" },
-        { id: 3, status: "yopilgan", date: "2024-05-16 19:10" },
-        { id: 4, status: "yopilgan", date: "2024-05-15 14:30" },
-      ];
-    }
+    let active = true;
 
-    const totalIncidents = incidents.length;
-    const activeIncidents = incidents.filter(i => i.status !== 'yopilgan').length;
-    // Mock safe index calculation based on active vs total
-    const safeIndex = totalIncidents > 0 ? Math.round(((totalIncidents - activeIncidents) / totalIncidents) * 100) : 100;
-
-    setStats({
-      totalIncidents,
-      activeIncidents,
-      safeIndex,
-      activePatrols: 128 // Hardcoded for now
-    });
-
-    // Mock dynamic chart data based on total incidents for demonstration
-    const baseLine = yearFilter === "current" ? totalIncidents * 10 : (totalIncidents * 10) + 150;
-    
-    setDynamicCrimeData([
-      { name: lang === 'uz' ? 'Yan' : 'Янв', value: baseLine + 10, risk: baseLine - 5 },
-      { name: lang === 'uz' ? 'Fev' : 'Фев', value: baseLine + 5, risk: baseLine + 15 },
-      { name: lang === 'uz' ? 'Mar' : 'Мар', value: baseLine + 20, risk: baseLine + 10 },
-      { name: lang === 'uz' ? 'Apr' : 'Апр', value: baseLine + 15, risk: baseLine + 5 },
-      { name: lang === 'uz' ? 'May' : 'Май', value: yearFilter === "current" ? totalIncidents : baseLine - 10, risk: yearFilter === "current" ? activeIncidents * 10 : baseLine + 20 },
-      { name: lang === 'uz' ? 'Iyn' : 'Июн', value: baseLine + 8, risk: baseLine - 2 },
-      { name: lang === 'uz' ? 'Iyl' : 'Июл', value: baseLine + 12, risk: baseLine + 8 },
-    ]);
-
-    // Load youth list to aggregate dynamic district rankings
-    const youthDataStr = localStorage.getItem("youthList");
-    let youthList: any[] = [];
-    if (youthDataStr) {
-      youthList = JSON.parse(youthDataStr);
-    }
-
-    // Base district data
-    const baseDistricts = [
-      { uz: 'Guliston', ru: 'г. Гулистан', crimes: 120, severity: 'high' },
-      { uz: 'Oqoltin', ru: 'Акалтынский', crimes: 98, severity: 'medium' },
-      { uz: "Sirdaryo t.", ru: 'Сырдарьинский', crimes: 145, severity: 'high' },
-      { uz: 'Sayxunobod', ru: 'Сайхунабадский', crimes: 45, severity: 'low' },
-      { uz: 'Mirzaobod', ru: 'Мирзаабадский', crimes: 86, severity: 'medium' },
-    ];
-
-    // Map and aggregate custom youth risk profiles
-    youthList.forEach(youth => {
-      const mahalla = (youth.mahalla || "").toLowerCase();
-      let targetUz = "Guliston";
-      
-      if (mahalla.includes("abay") || mahalla.includes("абай")) {
-        targetUz = "Guliston";
-      } else if (mahalla.includes("dilbuloq") || mahalla.includes("дилбулок")) {
-        targetUz = "Oqoltin";
-      } else if (mahalla.includes("oqtepa") || mahalla.includes("октепа")) {
-        targetUz = "Sirdaryo t.";
-      }
-      
-      const district = baseDistricts.find(d => d.uz === targetUz);
-      if (district) {
-        const xavf = (youth.xavf || "").toLowerCase();
-        let addedCrimes = 5;
-        if (xavf.includes("yuqori") || xavf.includes("высокий")) {
-          addedCrimes = 25;
-        } else if (xavf.includes("o'rta") || xavf.includes("средний")) {
-          addedCrimes = 15;
+    async function fetchStats() {
+      try {
+        const res = await fetch("/api/statistics");
+        if (!res.ok) throw new Error("Failed to fetch statistics");
+        const data = await res.json();
+        
+        if (data.success && active) {
+          setStats({
+            totalIncidents: data.incidentsCount,
+            activeIncidents: data.activeIncidentsCount,
+            safeIndex: data.safeIndex,
+            activePatrols: 128
+          });
+          
+          setDynamicCrimeData(data.crimeTrend);
+          setDynamicDistrictData(data.districtStats);
         }
-        district.crimes += addedCrimes;
+      } catch (err) {
+        console.error("Dashboard statistics load error:", err);
       }
-    });
+    }
 
-    // Re-evaluate severity after additions
-    baseDistricts.forEach(d => {
-      if (d.crimes >= 130) {
-        d.severity = 'high';
-      } else if (d.crimes >= 80) {
-        d.severity = 'medium';
-      } else {
-        d.severity = 'low';
-      }
-    });
-
-    setDynamicDistrictData(baseDistricts);
-
+    fetchStats();
+    
+    return () => {
+      active = false;
+    };
   }, [lang, yearFilter]);
 
   const kpiCards = [
