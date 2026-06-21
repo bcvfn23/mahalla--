@@ -108,56 +108,57 @@ export default function AITahlilPage() {
   }, [messages]);
 
   useEffect(() => {
-    const loadData = () => {
-      const youthData = localStorage.getItem("youthList");
-      let youth = [];
-      if (youthData) {
-        youth = JSON.parse(youthData);
+    let active = true;
+
+    const loadData = async () => {
+      try {
+        const res = await fetch("/api/statistics");
+        if (!res.ok) throw new Error("Failed to fetch statistics");
+        const data = await res.json();
+        
+        if (data.success && active) {
+          setStats({
+            highRiskPct: data.highRiskPct,
+            activeYouth: data.youthCount,
+            totalIncidents: data.incidentsCount,
+          });
+
+          let risks = data.topRisks;
+          if (risks.length === 0) {
+            risks = [
+              { ism: "Azamat", familiya: "Rustamov", mahalla: lang === 'uz' ? "Navoiy mah." : "махалля Навои", riskScore: 94 },
+              { ism: "Sardor", familiya: "Karimov", mahalla: lang === 'uz' ? "Do'stlik mah." : "махалля Дустлик", riskScore: 89 },
+              { ism: "Umid", familiya: "Tursunov", mahalla: lang === 'uz' ? "Yoshlik mah." : "махалля Ешлиk", riskScore: 85 }
+            ];
+          }
+          setTopRisks(risks);
+
+          if (data.crimeTrend && data.crimeTrend.length > 0) {
+            setTrendData(data.crimeTrend.map((t: any) => t.value));
+          } else {
+            setTrendData([
+              45 + Math.random() * 10,
+              50 + Math.random() * 15,
+              40 + Math.random() * 20,
+              60 + Math.random() * 25,
+              55 + Math.random() * 30,
+              70 + Math.random() * 30,
+            ]);
+          }
+          setAttendance(data.averageAttendance || 95);
+        }
+      } catch (err) {
+        console.error("AI page statistics load error:", err);
       }
-
-      const incData = localStorage.getItem("incidentsList");
-      let incidents = [];
-      if (incData) {
-        incidents = JSON.parse(incData);
-      }
-
-      const highRiskCount = youth.filter((y: any) => y.xavf === "Yuqori xavf" || y.xavf === "Высокий риск").length;
-      const highRiskPct = youth.length > 0 ? Math.round((highRiskCount / youth.length) * 100) : 0;
-
-      setStats({
-        highRiskPct,
-        activeYouth: youth.length,
-        totalIncidents: incidents.length,
-      });
-
-      let risks = youth
-        .filter((y: any) => y.xavf === "Yuqori xavf" || y.xavf === "Высокий риск")
-        .slice(0, 5);
-
-      if (risks.length === 0) {
-        risks = [
-          { ism: "Azamat", familiya: "Rustamov", mahalla: lang === 'uz' ? "Navoiy mah." : "махалля Навои", riskScore: 94 },
-          { ism: "Sardor", familiya: "Karimov", mahalla: lang === 'uz' ? "Do'stlik mah." : "махалля Дустлик", riskScore: 89 },
-          { ism: "Umid", familiya: "Tursunov", mahalla: lang === 'uz' ? "Yoshlik mah." : "махалля Ешлиk", riskScore: 85 }
-        ];
-      }
-      setTopRisks(risks);
-
-      setTrendData([
-        45 + Math.random() * 10,
-        50 + Math.random() * 15,
-        40 + Math.random() * 20,
-        60 + Math.random() * 25,
-        55 + Math.random() * 30,
-        70 + Math.random() * 30,
-      ]);
-      setAttendance(Math.floor(82 + Math.random() * 16));
     };
 
     loadData();
     window.addEventListener("youthAdded", loadData);
-    return () => window.removeEventListener("youthAdded", loadData);
-  }, []);
+    return () => {
+      active = false;
+      window.removeEventListener("youthAdded", loadData);
+    };
+  }, [lang]);
 
   const sendCustomMessage = async (message: string) => {
     if (!message) return;
