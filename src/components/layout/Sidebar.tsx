@@ -142,7 +142,6 @@ export default function Sidebar() {
 
   if (role === "admin") {
     boshqaruv.push({ name: "nav.integratsiyalar", href: "/integratsiyalar", icon: LinkIcon });
-    boshqaruv.push({ name: "nav.audit", href: "/audit", icon: ClipboardList });
   }
 
   const navigation = {
