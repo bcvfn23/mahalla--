@@ -25,6 +25,7 @@ import {
   HeartHandshake,
   Briefcase,
   Award,
+  BookOpen,
   X
 } from "lucide-react";
 
@@ -138,6 +139,10 @@ export default function Sidebar() {
 
   if (["admin", "uchastkavoy"].includes(role)) {
     boshqaruv.push({ name: "nav.ai_tahlil", href: "/ai-tahlil", icon: BrainCircuit });
+  }
+
+  if (["admin", "yetakchi", "raisi", "uchastkavoy"].includes(role)) {
+    boshqaruv.push({ name: "nav.kundalik", href: "/kundalik", icon: BookOpen });
   }
 
   if (role === "admin") {

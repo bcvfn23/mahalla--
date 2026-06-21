@@ -11,19 +11,20 @@ const rolePermissions: Record<string, string[]> = {
   admin: [
     "/dashboard", "/yoshlar", "/xarita", "/faollik", "/huquqbuzarliklar",
     "/patrul", "/rejalar", "/kalendar", "/statistika", "/murojaatlar",
-    "/yordam", "/bandlik", "/tanlovlar", "/ai-tahlil", "/integratsiyalar", "/profil"
+    "/yordam", "/bandlik", "/tanlovlar", "/ai-tahlil", "/integratsiyalar", "/profil",
+    "/kundalik"
   ],
   uchastkavoy: [
     "/dashboard", "/yoshlar", "/xarita", "/faollik", "/huquqbuzarliklar",
-    "/patrul", "/ai-tahlil", "/profil"
+    "/patrul", "/ai-tahlil", "/profil", "/kundalik"
   ],
   raisi: [
     "/dashboard", "/yoshlar", "/rejalar", "/kalendar", "/statistika",
-    "/murojaatlar", "/yordam", "/profil"
+    "/murojaatlar", "/yordam", "/profil", "/kundalik"
   ],
   yetakchi: [
     "/dashboard", "/yoshlar", "/rejalar", "/kalendar", "/bandlik",
-    "/tanlovlar", "/profil"
+    "/tanlovlar", "/profil", "/kundalik"
   ]
 };
 
@@ -79,6 +80,7 @@ export const config = {
     "/tanlovlar", "/tanlovlar/:path*",
     "/ai-tahlil", "/ai-tahlil/:path*",
     "/integratsiyalar", "/integratsiyalar/:path*",
-    "/profil", "/profil/:path*"
+    "/profil", "/profil/:path*",
+    "/kundalik", "/kundalik/:path*"
   ]
 };
