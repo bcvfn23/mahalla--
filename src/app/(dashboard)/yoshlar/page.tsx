@@ -41,10 +41,18 @@ export default function YoshlarPage() {
 
   const canEdit = user?.role === "admin" || user?.role === "yetakchi" || user?.role === "raisi";
 
-  const loadYouth = () => {
-    const data = localStorage.getItem("youthList");
-    if (data) {
-      setYouthList(JSON.parse(data));
+  const loadYouth = async () => {
+    try {
+      const xavfQuery = selectedRiskFilter === "All" ? "" : selectedRiskFilter === "High" ? "Yuqori xavf" : "O'rta xavf";
+      const res = await fetch(`/api/youth?limit=100&search=${encodeURIComponent(searchTerm)}&xavf=${encodeURIComponent(xavfQuery)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setYouthList(data.items);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load youth", e);
     }
   };
 
@@ -52,15 +60,24 @@ export default function YoshlarPage() {
     loadYouth();
     window.addEventListener("youthAdded", loadYouth);
     return () => window.removeEventListener("youthAdded", loadYouth);
-  }, []);
+  }, [searchTerm, selectedRiskFilter]);
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm(lang === 'uz' ? "Rostdan ham o'chirmoqchimisiz?" : "Вы действительно хотите удалить?")) {
-      const updatedList = youthList.filter(y => y.id !== id);
-      setYouthList(updatedList);
-      localStorage.setItem("youthList", JSON.stringify(updatedList));
-      window.dispatchEvent(new Event("youthAdded")); // update navbar count
-      toast.info(lang === 'uz' ? "Ma'lumot o'chirildi" : "Запись удалена");
+      try {
+        const res = await fetch(`/api/youth/${id}`, { method: "DELETE" });
+        if (res.ok) {
+          toast.success(lang === 'uz' ? "Ma'lumot o'chirildi" : "Запись удалена");
+          loadYouth();
+          window.dispatchEvent(new Event("youthAdded")); // update navbar count
+        } else {
+          const errData = await res.json();
+          toast.error(errData.error || (lang === 'uz' ? "Xatolik yuz berdi" : "Произошла ошибка"));
+        }
+      } catch (e) {
+        console.error(e);
+        toast.error(lang === 'uz' ? "Server bilan aloqa uzildi" : "Ошибка соединения с сервером");
+      }
     }
   };
 
@@ -69,19 +86,7 @@ export default function YoshlarPage() {
     setEditModalOpen(true);
   };
 
-  // Standard filtering logic
-  const filteredList = youthList.filter(y => {
-    const matchesSearch = 
-      y.ism.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      y.familiya.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      y.jshshir.includes(searchTerm) ||
-      y.pasport.toLowerCase().includes(searchTerm.toLowerCase());
-
-    if (selectedRiskFilter === "All") return matchesSearch;
-    if (selectedRiskFilter === "High") return matchesSearch && (y.xavf === "Yuqori xavf" || y.xavf === "Высокий риск");
-    if (selectedRiskFilter === "Medium") return matchesSearch && (y.xavf === "O'rta xavf" || y.xavf === "Средний риск");
-    return matchesSearch;
-  });
+  const filteredList = youthList;
 
   // Dynamic skill balance radar charts Depending on risk level
   const getSkillsForYouth = (xavf: string) => {

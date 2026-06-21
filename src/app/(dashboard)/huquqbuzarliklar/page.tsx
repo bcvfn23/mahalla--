@@ -4,7 +4,19 @@ import { useI18n } from "@/lib/i18n";
 import { AlertTriangle, Plus, FileText, Search, Filter, ShieldAlert, CheckCircle, Clock, X } from "lucide-react";
 import { useState, useEffect } from "react";
 
-const initialIncidents = [
+interface Incident {
+  id: string | number;
+  name: string;
+  typeUz: string;
+  typeRu: string;
+  date: string;
+  locationUz: string;
+  locationRu: string;
+  status: string;
+  severity: string;
+}
+
+const initialIncidents: Incident[] = [
   { id: 1, name: "Aliyev Vali", typeUz: "Mayda bezorilik", typeRu: "Мелкое хулиганство", date: "2024-05-18 21:45", locationUz: "Guliston sh., Navoiy ko'chasi", locationRu: "г. Гулистан, ул. Навои", status: "jarayonda", severity: "medium" },
   { id: 2, name: "Noma'lum", typeUz: "O'g'rilik (Avtomashina)", typeRu: "Кража (Автомобиль)", date: "2024-05-17 03:20", locationUz: "Sirdaryo t., 2-mikrorayon", locationRu: "Сырдарьинский р., 2-й микрорайон", status: "ochiq", severity: "high" },
   { id: 3, name: "Karimov Jasur", typeUz: "Jamoat tartibini buzish", typeRu: "Нарушение общественного порядка", date: "2024-05-16 19:10", locationUz: "Sayxunobod t., Markaziy bozor", locationRu: "Сайхунабадский р., Центральный рынок", status: "yopilgan", severity: "low" },
@@ -14,7 +26,7 @@ const initialIncidents = [
 export default function HuquqbuzarliklarPage() {
   const { t, lang } = useI18n();
   const [search, setSearch] = useState("");
-  const [incidents, setIncidents] = useState(initialIncidents);
+  const [incidents, setIncidents] = useState<Incident[]>(initialIncidents);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newRecord, setNewRecord] = useState({ name: "", type: "", location: "" });
   const [statusFilter, setStatusFilter] = useState("all");
@@ -22,14 +34,31 @@ export default function HuquqbuzarliklarPage() {
   const [viewIncident, setViewIncident] = useState<any>(null);
 
   useEffect(() => {
-    const data = localStorage.getItem("incidentsList");
-    if (data) {
-      setIncidents(JSON.parse(data));
-    } else {
-      setIncidents(initialIncidents);
-      localStorage.setItem("incidentsList", JSON.stringify(initialIncidents));
-    }
+    const fetchIncidents = async () => {
+      try {
+        const res = await fetch("/api/incidents");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.items) {
+            setIncidents(data.items);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch incidents, falling back to localStorage", err);
+      }
+      
+      const localData = localStorage.getItem("incidentsList");
+      if (localData) {
+        setIncidents(JSON.parse(localData));
+      } else {
+        setIncidents(initialIncidents);
+        localStorage.setItem("incidentsList", JSON.stringify(initialIncidents));
+      }
+    };
+    fetchIncidents();
   }, []);
+
 
   const filteredIncidents = incidents.filter(inc => {
     const matchesSearch = inc.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -39,12 +68,44 @@ export default function HuquqbuzarliklarPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const handleAdd = (e: React.FormEvent) => {
+  const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newRecord.name || !newRecord.type || !newRecord.location) return;
 
-    const newInc = {
-      id: incidents.length + 1,
+    const bodyPayload = {
+      name: newRecord.name,
+      typeUz: newRecord.type,
+      typeRu: newRecord.type,
+      locationUz: newRecord.location,
+      locationRu: newRecord.location,
+      status: "ochiq",
+      severity: "medium"
+    };
+
+    try {
+      const res = await fetch("/api/incidents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bodyPayload),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.item) {
+          const updatedIncidents = [data.item, ...incidents];
+          setIncidents(updatedIncidents);
+          localStorage.setItem("incidentsList", JSON.stringify(updatedIncidents));
+          setNewRecord({ name: "", type: "", location: "" });
+          setIsModalOpen(false);
+          return;
+        }
+      }
+    } catch (err) {
+      console.error("Failed to save incident to server", err);
+    }
+
+    // Local-only fallback
+    const fallbackInc = {
+      id: Date.now().toString(),
       name: newRecord.name,
       typeUz: newRecord.type,
       typeRu: newRecord.type,
@@ -54,29 +115,60 @@ export default function HuquqbuzarliklarPage() {
       status: "ochiq",
       severity: "medium"
     };
-
-    const updatedIncidents = [newInc, ...incidents];
+    const updatedIncidents = [fallbackInc, ...incidents];
     setIncidents(updatedIncidents);
     localStorage.setItem("incidentsList", JSON.stringify(updatedIncidents));
     setNewRecord({ name: "", type: "", location: "" });
     setIsModalOpen(false);
   };
 
-  const handleUpdateStatus = (id: number, newStatus: string) => {
+
+  const handleUpdateStatus = async (id: string | number, newStatus: string) => {
+    try {
+      const res = await fetch(`/api/incidents/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          // Status updated on server successfully
+        }
+      }
+    } catch (err) {
+      console.error("Failed to update status on server", err);
+    }
+
     const updated = incidents.map(inc => inc.id === id ? { ...inc, status: newStatus } : inc);
     setIncidents(updated);
     localStorage.setItem("incidentsList", JSON.stringify(updated));
     setViewIncident(null);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: string | number) => {
     if (confirm(lang === 'uz' ? "Rostdan ham o'chirmoqchimisiz?" : "Вы действительно хотите удалить?")) {
+      try {
+        const res = await fetch(`/api/incidents/${id}`, {
+          method: "DELETE"
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success) {
+            // Deleted successfully on server
+          }
+        }
+      } catch (err) {
+        console.error("Failed to delete incident on server", err);
+      }
+
       const updated = incidents.filter(inc => inc.id !== id);
       setIncidents(updated);
       localStorage.setItem("incidentsList", JSON.stringify(updated));
       setViewIncident(null);
     }
   };
+
 
   return (
     <div className="space-y-6">

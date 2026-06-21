@@ -6,7 +6,7 @@ import { Inbox, Plus, AlertCircle, X, Clock, User, Tag, CheckCircle2, Sparkles, 
 import { toast } from "sonner";
 
 interface Appeal {
-  id: number;
+  id: string | number;
   fullName: string;
   type: string;
   text: string;
@@ -14,6 +14,7 @@ interface Appeal {
   status: "yangi" | "jarayonda" | "hal etilgan";
   predictedCategory?: string;
 }
+
 
 const initialAppeals: Appeal[] = [
   { 
@@ -46,14 +47,31 @@ export default function MurojaatlarPage() {
   const [predictedCat, setPredictedCat] = useState("");
 
   useEffect(() => {
-    const data = localStorage.getItem("appealsList");
-    if (data) {
-      setAppeals(JSON.parse(data));
-    } else {
-      setAppeals(initialAppeals);
-      localStorage.setItem("appealsList", JSON.stringify(initialAppeals));
-    }
+    const fetchAppeals = async () => {
+      try {
+        const res = await fetch("/api/appeals");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.items) {
+            setAppeals(data.items);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch appeals, falling back to localStorage", err);
+      }
+      
+      const localData = localStorage.getItem("appealsList");
+      if (localData) {
+        setAppeals(JSON.parse(localData));
+      } else {
+        setAppeals(initialAppeals);
+        localStorage.setItem("appealsList", JSON.stringify(initialAppeals));
+      }
+    };
+    fetchAppeals();
   }, []);
+
 
   // Simple heuristic Client-side AI Category Predictor
   const predictCategory = (subject: string, body: string) => {
@@ -84,12 +102,45 @@ export default function MurojaatlarPage() {
     }
   }, [newAppeal.type, newAppeal.text]);
 
-  const handleAdd = (e: React.FormEvent) => {
+  const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newAppeal.fullName || !newAppeal.type) return;
 
-    const appeal: Appeal = {
-      id: Date.now(),
+    const bodyPayload = {
+      fullName: newAppeal.fullName,
+      type: newAppeal.type,
+      text: newAppeal.text,
+      status: "yangi",
+      predictedCategory: predictedCat.replace(" (AI)", "")
+    };
+
+    try {
+      const res = await fetch("/api/appeals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bodyPayload),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.item) {
+          const updated = [data.item, ...appeals];
+          setAppeals(updated);
+          localStorage.setItem("appealsList", JSON.stringify(updated));
+          window.dispatchEvent(new Event("youthAdded")); // update counter badge
+          setNewAppeal({ fullName: "", type: "", text: "" });
+          setIsAddModalOpen(false);
+          toast.success(lang === 'uz' ? "Murojaat muvaffaqiyatli ro'yxatga olindi!" : "Обращение успешно зарегистрировано!");
+          return;
+        }
+      }
+    } catch (err) {
+      console.error("Failed to save appeal to server", err);
+    }
+
+    // Local-only fallback
+    const fallbackAppeal: Appeal = {
+      id: Date.now().toString(),
       fullName: newAppeal.fullName,
       type: newAppeal.type,
       text: newAppeal.text,
@@ -98,16 +149,33 @@ export default function MurojaatlarPage() {
       predictedCategory: predictedCat.replace(" (AI)", "")
     };
 
-    const updated = [appeal, ...appeals];
+    const updated = [fallbackAppeal, ...appeals];
     setAppeals(updated);
     localStorage.setItem("appealsList", JSON.stringify(updated));
     window.dispatchEvent(new Event("youthAdded")); // update counter badge
     setNewAppeal({ fullName: "", type: "", text: "" });
     setIsAddModalOpen(false);
-    toast.success(lang === 'uz' ? "Murojaat muvaffaqiyatli ro'yxatga olindi!" : "Обращение успешно зарегистрировано!");
+    toast.success(lang === 'uz' ? "Murojaat saqlandi (Faqat lokal)!" : "Обращение сохранено (Локально)!");
   };
 
-  const handleUpdateStatus = (id: number, status: "yangi" | "jarayonda" | "hal etilgan") => {
+
+  const handleUpdateStatus = async (id: string | number, status: "yangi" | "jarayonda" | "hal etilgan") => {
+    try {
+      const res = await fetch(`/api/appeals/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          // Status updated on server successfully
+        }
+      }
+    } catch (err) {
+      console.error("Failed to update status on server", err);
+    }
+
     const updated = appeals.map(a => a.id === id ? { ...a, status } : a);
     setAppeals(updated);
     localStorage.setItem("appealsList", JSON.stringify(updated));
@@ -118,6 +186,7 @@ export default function MurojaatlarPage() {
     setViewAppeal(active);
     toast.success(lang === 'uz' ? "Murojaat holati yangilandi!" : "Статус обращения обновлен!");
   };
+
 
   const yangiCount = appeals.filter(a => a.status === 'yangi').length;
   const jarayondaCount = appeals.filter(a => a.status === 'jarayonda').length;

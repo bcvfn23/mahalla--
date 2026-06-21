@@ -178,7 +178,7 @@ export default function IntegratsiyalarPage() {
     }, 2000);
   };
 
-  const runSimulationQuery = () => {
+  const runSimulationQuery = async () => {
     if (!queryInput) {
       toast.error(lang === 'uz' ? "So'rov maydoni bo'sh bo'lishi mumkin emas!" : "Поле запроса не может быть пустым!");
       return;
@@ -196,7 +196,19 @@ export default function IntegratsiyalarPage() {
       });
     };
 
-    (async () => {
+    try {
+      const response = await fetch("/api/integrations/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: selectedDb, query: queryInput }),
+      });
+
+      const apiData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(apiData.error || "Failed to connect to gateway");
+      }
+
       await addLog(`[SYSTEM] [${new Date().toLocaleTimeString()}] INITIATING SECURE REST-API CONNECTION TO ${selectedDb.toUpperCase()}.GOV.UZ...`, 100);
       await addLog(`[GATEWAY] RESOLVING ROUTE TO SECURE SUBNET: 10.220.14.89 (GOVNET-SRD)`, 300);
       await addLog(`[SECURITY] SHIFTING CYCLIC ROTARY ENCRYPTION TO AES-256 GCM...`, 400);
@@ -209,68 +221,27 @@ export default function IntegratsiyalarPage() {
         await addLog(`[SQL] QUERY SENT: SELECT * FROM iiv_preventive_db WHERE jshshir = '${queryInput}'`, 400);
         await addLog(`[SQL] INDEXED FIELDS: STATUS, CRIME_INDEX, REGISTRATION_TYPE`, 200);
         await addLog(`[SYSTEM] PARSING JSON ENCRYPTED PAYLOAD FROM IIV DATACENTER...`, 400);
-        await addLog(`[SUCCESS] 200 OK - TARGET RECORD SUCCESSFULLY VERIFIED.`, 300);
-        setQueryResult({
-          nameUz: "Sardor Ahmedov",
-          nameRu: "Сардор Ахмедов",
-          birth: "2003-09-12",
-          statusUz: "NIZOLI (Profilaktik nazorat ostida)",
-          statusRu: "КОНФЛИКТНЫЙ (Под проф. контролем)",
-          detailsUz: "Faoliyat turi aniqlanmagan. IIV ro'yxatida yengil darajada turadi.",
-          detailsRu: "Род деятельности не определен. Состоит на учете МВД легкой категории.",
-          aiRecommendationUz: "Kasb-hunar va IT markazlariga yo'naltirish orqali bandligini ta'minlash tavsiya etiladi.",
-          aiRecommendationRu: "Рекомендуется обеспечить занятость путем направления в профессиональные и IT центры."
-        });
+        await addLog(`[SUCCESS] 200 OK - TARGET RECORD ${apiData.found ? "FOUND AND VERIFIED" : "NOT FOUND (FALLBACK ACTIVE)"}.`, 300);
       } else if (selectedDb === "employment") {
         await addLog(`[API] GET REQUEST: /api/v1/jobs/registry?district=Sirdaryo&category='${queryInput}'`, 400);
         await addLog(`[API] PARSING VACANCIES IN SYRDARYA DISTRICT REGISTRY...`, 300);
         await addLog(`[SYSTEM] FILTERING SALARY RANGE > 3,500,000 UZS...`, 300);
-        await addLog(`[SUCCESS] 200 OK - RECEIVED 3 MATCHING POSITIONS.`, 300);
-        setQueryResult({
-          count: 3,
-          positions: [
-            { 
-              titleUz: "Axborot Texnologiyalari Yetakchi Mutaxassisi", 
-              titleRu: "Ведущий специалист по IT", 
-              employerUz: "Sirdaryo Suv ta'minoti AJ", 
-              employerRu: "АО Сирдарё Сув таъминоти", 
-              salary: "4,500,000 UZS" 
-            },
-            { 
-              titleUz: "Kompyuter Operator-Operator", 
-              titleRu: "Оператор ПК", 
-              employerUz: "Guliston IT Park rezidenti", 
-              employerRu: "Резидент IT Park Гулистан", 
-              salary: "3,800,000 UZS" 
-            },
-            { 
-              titleUz: "Tizim administrator yordamchisi", 
-              titleRu: "Помощник системного администратора", 
-              employerUz: "Sirdaryo shahar 4-sonli maktab", 
-              employerRu: "Школа №4 г. Сырдарья", 
-              salary: "3,200,000 UZS" 
-            }
-          ]
-        });
+        await addLog(`[SUCCESS] 200 OK - RECEIVED ${apiData.count} MATCHING POSITIONS.`, 300);
       } else {
         await addLog(`[API] ENCRYPTED PAYLOAD REQ: /oliy-talim/diploma/verify?id=${queryInput}`, 400);
         await addLog(`[DB] SEARCHING CENTRAL REGISTRY OF THE MINISTRY OF HIGHER EDUCATION...`, 300);
-        await addLog(`[SUCCESS] 200 OK - DIPLOMA/CERTIFICATE SERIAL MATCHED.`, 300);
-        setQueryResult({
-          studentUz: "Jamilov Bobur",
-          studentRu: "Джамилов Бобур",
-          institutionUz: "Guliston Davlat Universiteti",
-          institutionRu: "Гулистанский Государственный Университет",
-          specialtyUz: "Amaliy Matematika va IT",
-          specialtyRu: "Прикладная математика и IT",
-          gradYear: "2025",
-          gpa: "4.7 / 5.0",
-          verified: true
-        });
+        await addLog(`[SUCCESS] 200 OK - DIPLOMA/CERTIFICATE SERIAL ${apiData.verified ? "VERIFIED" : "INVALID"}.`, 300);
       }
+
+      setQueryResult(apiData);
       setQuerying(false);
       toast.success(lang === 'uz' ? "Xavfsiz so'rov muvaffaqiyatli yakunlandi!" : "Безопасный запрос успешно выполнен!");
-    })();
+    } catch (err: any) {
+      console.error(err);
+      await addLog(`[ERROR] [TLS] HANDSHAKE OR GATEWAY TIMEOUT: ${err.message || "Unknown error"}`, 200);
+      setQuerying(false);
+      toast.error(lang === 'uz' ? "So'rov yuborishda xatolik yuz berdi" : "Произошла ошибка при отправке запроса");
+    }
   };
 
   return (

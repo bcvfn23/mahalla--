@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: yoshlar_qalqoni_db
+    environment:
+      - POSTGRES_USER=qalqon_admin
+      - POSTGRES_PASSWORD=qalqon_secure_pass_2026
+      - POSTGRES_DB=yoshlar_qalqoni
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    restart: always
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: yoshlar_qalqoni_web
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://qalqon_admin:qalqon_secure_pass_2026@postgres:5432/yoshlar_qalqoni?schema=public
+      - JWT_ACCESS_SECRET=yoshlar-qalqoni-super-secret-access-token-key-2026
+      - JWT_REFRESH_SECRET=yoshlar-qalqoni-super-secret-refresh-token-key-2026
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      - postgres
+    restart: always
+
+volumes:
+  pg-data:

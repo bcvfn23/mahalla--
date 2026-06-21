@@ -71,15 +71,20 @@ export default function Sidebar() {
 
 
   useEffect(() => {
-    const updateStats = () => {
-      const youth = localStorage.getItem("youthList");
-      setYouthCount(youth ? JSON.parse(youth).length : 0);
-
-      const incidents = localStorage.getItem("incidentsList");
-      setIncidentsCount(incidents ? JSON.parse(incidents).length : 0);
-
-      const appeals = localStorage.getItem("appealsList");
-      setAppealsCount(appeals ? JSON.parse(appeals).length : 0);
+    const updateStats = async () => {
+      try {
+        const res = await fetch("/api/statistics");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success) {
+            setYouthCount(data.youthCount);
+            setIncidentsCount(data.incidentsCount);
+            setAppealsCount(data.appealsCount);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to load statistics", e);
+      }
     };
 
     updateStats();
@@ -137,6 +142,7 @@ export default function Sidebar() {
 
   if (role === "admin") {
     boshqaruv.push({ name: "nav.integratsiyalar", href: "/integratsiyalar", icon: LinkIcon });
+    boshqaruv.push({ name: "nav.audit", href: "/audit", icon: ClipboardList });
   }
 
   const navigation = {

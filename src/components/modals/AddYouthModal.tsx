@@ -17,6 +17,7 @@ export interface YouthData {
   telefon: string;
   davomat: string;
   mahalla: string;
+  mahallaId?: string;
   xavf: string;
   izoh: string;
   createdAt?: string;
@@ -41,9 +42,31 @@ export default function AddYouthModal({ isOpen, onClose, editData }: Props) {
     telefon: "",
     davomat: "",
     mahalla: "",
+    mahallaId: "",
     xavf: "",
     izoh: ""
   });
+  const [mahallas, setMahallas] = useState<any[]>([]);
+
+  // Fetch mahallas list
+  useEffect(() => {
+    const fetchMahallas = async () => {
+      try {
+        const res = await fetch("/api/mahallas");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success) {
+            setMahallas(data.mahallas);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to fetch mahallas", e);
+      }
+    };
+    if (isOpen) {
+      fetchMahallas();
+    }
+  }, [isOpen]);
 
   // Handle escape key
   useEffect(() => {
@@ -62,9 +85,12 @@ export default function AddYouthModal({ isOpen, onClose, editData }: Props) {
     requestAnimationFrame(() => {
       if (!active) return;
       if (isOpen && editData) {
-        setFormData(editData);
+        setFormData({
+          ...editData,
+          mahallaId: editData.mahallaId || ""
+        });
       } else if (isOpen && !editData) {
-        setFormData({ ism: "", familiya: "", jshshir: "", pasport: "", yil: "", jins: "", maktab: "", telefon: "", davomat: "", mahalla: "", xavf: "", izoh: "" });
+        setFormData({ ism: "", familiya: "", jshshir: "", pasport: "", yil: "", jins: "", maktab: "", telefon: "", davomat: "", mahalla: "", mahallaId: "", xavf: "", izoh: "" });
       }
     });
     return () => {
@@ -79,33 +105,39 @@ export default function AddYouthModal({ isOpen, onClose, editData }: Props) {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Save to localStorage
-    const existingStr = localStorage.getItem("youthList");
-    let existingList = existingStr ? JSON.parse(existingStr) : [];
-    
-    if (editData) {
-      existingList = existingList.map((item: YouthData) => item.id === editData.id ? { ...formData, id: editData.id, createdAt: item.createdAt } : item);
-      toast.success(lang === 'uz' ? "Muvaffaqiyatli yangilandi!" : "Успешно обновлено!");
-    } else {
-      const newEntry = {
-        id: Date.now().toString(),
-        ...formData,
-        createdAt: new Date().toISOString()
-      };
-      existingList = [newEntry, ...existingList];
-      toast.success(lang === 'uz' ? "Muvaffaqiyatli saqlandi!" : "Успешно сохранено!");
+    try {
+      const url = editData ? `/api/youth/${editData.id}` : "/api/youth";
+      const method = editData ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          toast.success(editData
+            ? (lang === 'uz' ? "Muvaffaqiyatli yangilandi!" : "Успешно обновлено!")
+            : (lang === 'uz' ? "Muvaffaqiyatli saqlandi!" : "Успешно сохранено!")
+          );
+          window.dispatchEvent(new Event("youthAdded"));
+          onClose();
+        } else {
+          toast.error(data.error || (lang === 'uz' ? "Xatolik yuz berdi" : "Произошла ошибка"));
+        }
+      } else {
+        const data = await res.json();
+        toast.error(data.error || (lang === 'uz' ? "Server xatosi" : "Ошибка сервера"));
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error(lang === 'uz' ? "Server bilan bog'lanib bo'lmadi" : "Не удалось связаться с сервером");
     }
-    
-    localStorage.setItem("youthList", JSON.stringify(existingList));
-    
-    // Dispatch custom event so the youth page can refresh
-    window.dispatchEvent(new Event("youthAdded"));
-    
-    setFormData({ ism: "", familiya: "", jshshir: "", pasport: "", yil: "", jins: "", maktab: "", telefon: "", davomat: "", mahalla: "", xavf: "", izoh: "" });
-    onClose();
   };
 
   return (
@@ -199,11 +231,13 @@ export default function AddYouthModal({ isOpen, onClose, editData }: Props) {
             <div className="grid grid-cols-2 gap-5">
               <div>
                 <label className="block text-[10px] font-bold text-foreground/50 uppercase tracking-wider mb-2">{lang === 'uz' ? "Mahalla *" : "Махалля *"}</label>
-                <select name="mahalla" value={formData.mahalla} onChange={handleChange} required className="w-full bg-background border border-card-border/80 rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-primary/50 transition-colors appearance-none">
+                <select name="mahallaId" value={formData.mahallaId || ""} onChange={handleChange} required className="w-full bg-background border border-card-border/80 rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-primary/50 transition-colors appearance-none">
                   <option value="">{lang === 'uz' ? "Tanlang" : "Выберите"}</option>
-                  <option value={lang === 'uz' ? "Abay mahallasi" : "махалля Абай"}>{lang === 'uz' ? "Abay mahallasi" : "махалля Абай"}</option>
-                  <option value={lang === 'uz' ? "Dilbuloq mahallasi" : "махалля Дилбулок"}>{lang === 'uz' ? "Dilbuloq mahallasi" : "махалля Дилбулок"}</option>
-                  <option value={lang === 'uz' ? "Oqtepa mahallasi" : "махалля Октепа"}>{lang === 'uz' ? "Oqtepa mahallasi" : "махалля Октепа"}</option>
+                  {mahallas.map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {lang === 'uz' ? m.nameUz : m.nameRu}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div>

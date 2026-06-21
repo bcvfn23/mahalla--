@@ -14,7 +14,8 @@ export interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (user: User, remember: boolean) => void;
+  login: (username: string, pass: string, remember: boolean) => Promise<{ success: boolean; error?: string }>;
+  loginWithEImzo: (username: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -26,53 +27,90 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
+  // Validate active HTTPOnly cookie session on mount
   useEffect(() => {
-    // Check session on mount
     let active = true;
-    requestAnimationFrame(() => {
-      const token = sessionStorage.getItem("app_token") || localStorage.getItem("app_token");
-      if (token) {
-        try {
-          const decoded = JSON.parse(atob(token));
-          if (active) {
-            setUser(decoded);
+    const checkSession = async () => {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          if (active && data.success) {
+            setUser(data.user);
           }
-        } catch (e) {
-          console.error("Invalid token", e);
-          sessionStorage.removeItem("app_token");
-          localStorage.removeItem("app_token");
+        }
+      } catch (e) {
+        console.error("Session verification failed", e);
+      } finally {
+        if (active) {
+          setIsLoading(false);
         }
       }
-      if (active) {
-        setIsLoading(false);
-      }
-    });
+    };
+    checkSession();
     return () => {
       active = false;
     };
   }, []);
 
-  const login = (newUser: User, remember: boolean = false) => {
-    setUser(newUser);
-    // Fake JWT encoding for some base security/professionalism
-    const token = btoa(JSON.stringify(newUser));
-    if (remember) {
-      localStorage.setItem("app_token", token);
-    } else {
-      sessionStorage.setItem("app_token", token);
+  const login = async (username: string, pass: string, remember: boolean = false): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password: pass }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setUser(data.user);
+        router.push("/dashboard");
+        return { success: true };
+      }
+      return { success: false, error: data.message || data.error };
+    } catch (e) {
+      console.error("Login verification failed", e);
+      return { success: false, error: "Network error occurred. Please try again." };
     }
-    router.push("/dashboard");
   };
 
-  const logout = () => {
+  const loginWithEImzo = async (username: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const res = await fetch("/api/auth/e-imzo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          username, 
+          signature: "mock_signature_" + Math.random().toString(36).substring(7),
+          challenge: "mock_challenge_" + Date.now()
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setUser(data.user);
+        router.push("/dashboard");
+        return { success: true };
+      }
+      return { success: false, error: data.message || data.error };
+    } catch (e) {
+      console.error("E-IMZO login verification failed", e);
+      return { success: false, error: "Network error occurred during E-IMZO authentication." };
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch (e) {
+      console.error("Logout request failed", e);
+    }
     setUser(null);
-    localStorage.removeItem("app_token");
-    sessionStorage.removeItem("app_token");
     router.push("/");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, loginWithEImzo, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
