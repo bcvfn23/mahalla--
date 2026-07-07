@@ -5,10 +5,12 @@ import { DownloadCloud, ShieldCheck, Moon, Bell, RefreshCw, Power } from "lucide
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useAuth } from "@/lib/auth";
 
 export default function ProfilPage() {
   const { t, lang } = useI18n();
   const router = useRouter();
+  const { logout } = useAuth();
 
   const [notifEnabled, setNotifEnabled] = useState(true);
   const [darkEnabled, setDarkEnabled] = useState(true);
@@ -212,8 +214,8 @@ export default function ProfilPage() {
 
           <div className="pt-4 border-t border-card-border">
             <button
-              onClick={() => {
-                localStorage.removeItem("userRole");
+              onClick={async () => {
+                await logout();
                 router.push("/");
               }}
               className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-danger/10 hover:bg-danger/20 text-danger rounded-xl font-bold transition-colors"

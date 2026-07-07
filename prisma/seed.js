@@ -6,7 +6,25 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Seeding database...");
 
-  // 1. Seed Users with bcrypt hashed passwords
+  // 1. Clear existing data
+  await prisma.idempotentConsumer.deleteMany({});
+  await prisma.eventOutbox.deleteMany({});
+  await prisma.eventParticipant.deleteMany({});
+  await prisma.event.deleteMany({});
+  await prisma.jointReport.deleteMany({});
+  await prisma.socialAid.deleteMany({});
+  await prisma.employment.deleteMany({});
+  await prisma.attendance.deleteMany({});
+  await prisma.incident.deleteMany({});
+  await prisma.appeal.deleteMany({});
+  await prisma.youthProfile.deleteMany({});
+  await prisma.mahalla.deleteMany({});
+  await prisma.district.deleteMany({});
+  await prisma.region.deleteMany({});
+  await prisma.auditLog.deleteMany({});
+  await prisma.user.deleteMany({});
+
+  // 2. Seed Users
   const usersToSeed = [
     { username: "admin", name: "Yoshlar Qalqoni", role: "admin", pass: "123", avatar: "YQ" },
     { username: "uchastkavoy", name: "Mahalla Uchastkavoyi", role: "uchastkavoy", pass: "123", avatar: "UC" },
@@ -16,15 +34,8 @@ async function main() {
 
   for (const u of usersToSeed) {
     const hashedPassword = await bcrypt.hash(u.pass, 12);
-    await prisma.user.upsert({
-      where: { username: u.username },
-      update: {
-        name: u.name,
-        role: u.role,
-        passwordHash: hashedPassword,
-        avatar: u.avatar
-      },
-      create: {
+    await prisma.user.create({
+      data: {
         username: u.username,
         name: u.name,
         role: u.role,
@@ -35,14 +46,7 @@ async function main() {
   }
   console.log("Users seeded successfully.");
 
-  // Delete all existing data to prevent unique constraint conflicts and clean slate seeding
-  await prisma.attendance.deleteMany({});
-  await prisma.youthProfile.deleteMany({});
-  await prisma.mahalla.deleteMany({});
-  await prisma.district.deleteMany({});
-  await prisma.region.deleteMany({});
-
-  // 2. Seed Geography (Region -> District -> Mahallas)
+  // 3. Seed Geography
   const region = await prisma.region.create({
     data: {
       nameUz: "Sirdaryo viloyati",
@@ -74,7 +78,7 @@ async function main() {
   }
   console.log("Geography seeded successfully.");
 
-  // 3. Seed some initial youth profiles using the seeded mahallas
+  // 4. Seed Youth Profiles
   const ismlarErkak = ["Asadbek", "Javohir", "Diyorbek", "Sardor", "Otabek", "Farruh", "Suhrob", "Bekzod", "Shohruh", "Bobur"];
   const ismlarAyol = ["Dilnoza", "Madina", "Shaxnoza", "Kamola", "Laylo", "Sevara", "Nigora", "Zilola", "Guli", "Asila"];
   const familiyalar = ["Karimov", "Rahimov", "Umarov", "Tursunov", "Nazarov", "Solihov", "Rustamov", "Abduvaliyev", "Usmonov", "Eshonov"];
@@ -91,7 +95,7 @@ async function main() {
   for (let i = 0; i < 30; i++) {
     const isErkak = i % 2 === 0;
     const ism = isErkak ? ismlarErkak[i % ismlarErkak.length] : ismlarAyol[i % ismlarAyol.length];
-    let fam = familiyalar[i % familiyalar.length];
+    let fam = familiyalar[(i + Math.floor(i / 10)) % familiyalar.length];
     if (!isErkak) fam += "a";
 
     const jshshir = "3" + Math.floor(1000000000000 + (i * 1456789) % 9000000000000).toString();
@@ -101,9 +105,8 @@ async function main() {
     const mahalla = seededMahallas[i % seededMahallas.length];
     const telefon = "+998 90 7" + (100000 + i * 31).toString().substring(0, 6);
     const davomat = (90 + (i % 11)).toString();
-    const maktab = kasblarUz[i % kasblarUz.length];
     const xavf = i % 5 === 0 ? "HIGH" : i % 5 === 3 ? "MEDIUM" : "LOW";
-    const izoh = `Ishga joylashtirildi: ${maktab}.`;
+    const maktab = kasblarUz[i % kasblarUz.length];
 
     const profile = await prisma.youthProfile.create({
       data: {
@@ -117,16 +120,56 @@ async function main() {
         davomat,
         xavf,
         maktab,
-        izoh,
+        izoh: `Ishga joylashtirildi: ${maktab}.`,
         mahallaId: mahalla.id
       }
     });
     seededYouth.push(profile);
-  }
-  console.log("Youth profiles seeded successfully.");
 
-  // 4. Seed Incidents (Huquqbuzarliklar)
-  await prisma.incident.deleteMany({});
+    // Create default attendance records
+    await prisma.attendance.create({
+      data: {
+        profileId: profile.id,
+        date: new Date(),
+        present: parseFloat(davomat) >= 95,
+        reason: parseFloat(davomat) < 95 ? "Kasalligi sababli" : null
+      }
+    });
+
+    // Seed Employment for some profiles
+    if (i % 3 === 0) {
+      await prisma.employment.create({
+        data: {
+          profileId: profile.id,
+          profession: maktab,
+          status: i % 6 === 0 ? "band" : "o'qishda"
+        }
+      });
+    } else {
+      await prisma.employment.create({
+        data: {
+          profileId: profile.id,
+          profession: "Dasturlash",
+          status: "ishsiz"
+        }
+      });
+    }
+
+    // Seed Social Aid for some profiles
+    if (i % 4 === 1) {
+      await prisma.socialAid.create({
+        data: {
+          profileId: profile.id,
+          notebookType: i % 2 === 0 ? "yoshlar" : "temir",
+          helpType: "Kredit ajratish",
+          status: "kutmoqda"
+        }
+      });
+    }
+  }
+  console.log("Youth profiles, attendance, employment, and social aid seeded successfully.");
+
+  // 5. Seed Incidents (Huquqbuzarliklar)
   const incidentTypesUz = [
     "Huquqbuzarlikka moyillik",
     "Jamoat tartibini buzish",
@@ -145,6 +188,7 @@ async function main() {
     const mahalla = seededMahallas[i % seededMahallas.length];
     await prisma.incident.create({
       data: {
+        profileId: y.id,
         name: `${y.ism} ${y.familiya}`,
         typeUz: incidentTypesUz[i % incidentTypesUz.length],
         typeRu: incidentTypesRu[i % incidentTypesRu.length],
@@ -158,25 +202,19 @@ async function main() {
   }
   console.log("Incidents seeded successfully.");
 
-  // 5. Seed Appeals (Murojaatlar)
-  await prisma.appeal.deleteMany({});
+  // 6. Seed Appeals (Murojaatlar)
   const appealTypesUz = [
     "Ishga joylashtirishda amaliy yordam",
     "Tadbirkorlik faoliyati uchun kredit olish",
     "IT-markazda o'qish uchun subsidiya",
     "Psixologik yordam olish"
   ];
-  const appealTypesRu = [
-    "Помощь в трудоустройстве",
-    "Получение кредита для предпринимательства",
-    "Субсидия для обучения в IT-центре",
-    "Получение психологической помощи"
-  ];
 
   for (let i = 0; i < 12; i++) {
     const y = seededYouth[(i + 5) % seededYouth.length];
     await prisma.appeal.create({
       data: {
+        profileId: y.id,
         fullName: `${y.ism} ${y.familiya}`,
         type: appealTypesUz[i % appealTypesUz.length],
         text: `Murojaat mazmuni: ${appealTypesUz[i % appealTypesUz.length]} bo'yicha amaliy ko'mak so'rayman.`,
@@ -187,6 +225,63 @@ async function main() {
     });
   }
   console.log("Appeals seeded successfully.");
+
+  // 7. Seed Events & Participants
+  const eventsData = [
+    { titleUz: "Zakovat intellektual o'yini (Sirdaryo bosqichi)", date: "2026-05-25", status: "kutilmoqda" },
+    { titleUz: "IT-Park Mini-Hackathon 'Cyber Shield'", date: "2026-05-28", status: "jarayonda" },
+    { titleUz: "Sport musobaqasi (Stol tennisi turniri)", date: "2026-05-18", status: "yakunlangan" }
+  ];
+
+  for (const ed of eventsData) {
+    const ev = await prisma.event.create({
+      data: {
+        titleUz: ed.titleUz,
+        titleRu: ed.titleUz, // Simple mapping
+        date: ed.date,
+        status: ed.status
+      }
+    });
+
+    // Add some random participants
+    const randomParticipantsCount = 3 + (ev.titleUz.length % 5);
+    for (let pIdx = 0; pIdx < randomParticipantsCount; pIdx++) {
+      const targetYouth = seededYouth[(pIdx * 7) % seededYouth.length];
+      await prisma.eventParticipant.create({
+        data: {
+          eventId: ev.id,
+          profileId: targetYouth.id
+        }
+      }).catch(() => {}); // Prevent duplicates
+    }
+  }
+  console.log("Events and participants seeded successfully.");
+
+  // 8. Seed Joint Patrol Reports
+  await prisma.jointReport.create({
+    data: {
+      timestamp: "2026-05-20 14:12",
+      inspectorName: "Kpt. Radjabov O.",
+      leaderName: "S. Karimov",
+      profileId: seededYouth[0].id,
+      mahalla: seededMahallas[0].nameUz,
+      descriptionUz: "Yoshlar bilan oilaviy nizolarni hal qilish va ishga joylashtirish bo'yicha profilaktik suhbat o'tkazildi.",
+      descriptionRu: "Проведена профилактическая беседа по разрешению семейных конфликтов и трудоустройству молодежи."
+    }
+  });
+
+  await prisma.jointReport.create({
+    data: {
+      timestamp: "2026-05-20 11:34",
+      inspectorName: "Ltn. Alimov R.",
+      leaderName: "M. Usmonova",
+      profileId: seededYouth[1].id,
+      mahalla: seededMahallas[1].nameUz,
+      descriptionUz: "Maktabda dars qoldiruvchi voyaga yetmagan yoshlarning ota-onalari bilan tushuntirish ishlari olib borildi.",
+      descriptionRu: "Проведена разъяснительная работа с родителями несовершеннолетних учеников, пропускающих занятия."
+    }
+  });
+  console.log("Joint patrol reports seeded successfully.");
 }
 
 main()

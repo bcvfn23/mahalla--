@@ -88,24 +88,33 @@ model Mahalla {
 
 // Youth profile database
 model YouthProfile {
-  id          String       @id @default(uuid())
-  ism         String
-  familiya    String
-  jshshir     String       @unique
-  pasport     String       @unique
-  yil         String
-  jins        Gender
-  telefon     String
-  davomat     String       @default("100")
-  xavf        RiskLevel    @default(LOW)
-  maktab      String?      // Employment/Activity description
-  izoh        String?
-  mahallaId   String
-  mahalla     Mahalla      @relation(fields: [mahallaId], references: [id])
-  attendance  Attendance[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  deletedAt   DateTime?    // Soft Delete
+  id           String             @id @default(uuid())
+  ism          String
+  familiya     String
+  jshshir      String             @unique
+  pasport      String             @unique
+  yil          String
+  jins         Gender
+  telefon      String
+  davomat      String             @default("100")
+  xavf         RiskLevel          @default(LOW)
+  maktab       String?            // Employment/Activity description
+  izoh         String?
+  mahallaId    String
+  mahalla      Mahalla            @relation(fields: [mahallaId], references: [id])
+  attendance   Attendance[]
+  employment   Employment?
+  socialAid    SocialAid[]
+  incidents    Incident[]
+  appeals      Appeal[]
+  participants EventParticipant[]
+  jointReports JointReport[]
+
+  // Concurrency & Soft Delete
+  version      Int                @default(1)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  deletedAt    DateTime?          // Soft Delete
 
   @@index([familiya, ism])
   @@index([mahallaId])
@@ -123,19 +132,60 @@ model Attendance {
   @@index([profileId])
 }
 
+// Employment details (replaces local bandlikList)
+model Employment {
+  id         String       @id @default(uuid())
+  profileId  String       @unique
+  profile    YouthProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profession String
+  status     String       // "ishsiz", "band", "o'qishda"
+  
+  // Concurrency & Soft Delete
+  version    Int          @default(1)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  deletedAt  DateTime?
+
+  @@index([profileId])
+}
+
+// Social Aid details (replaces local yordamList)
+model SocialAid {
+  id           String       @id @default(uuid())
+  profileId    String
+  profile      YouthProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  notebookType String       // "temir", "ayol", "yoshlar"
+  helpType     String
+  status       String       @default("kutmoqda") // "kutmoqda", "hal_etildi"
+  
+  // Concurrency & Soft Delete
+  version      Int          @default(1)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  deletedAt    DateTime?
+
+  @@index([profileId])
+}
+
 // Incident management database
 model Incident {
-  id         String    @id @default(uuid())
+  id         String        @id @default(uuid())
+  profileId  String?
+  profile    YouthProfile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
   name       String
   typeUz     String
   typeRu     String
   date       String
   locationUz String
   locationRu String
-  status     String    @default("jarayonda") // yopilgan, jarayonda
-  severity   String    @default("low")       // low, medium, high
-  createdAt  DateTime  @default(now())
-  deletedAt  DateTime? // Soft Delete
+  status     String        @default("jarayonda") // yopilgan, jarayonda
+  severity   String        @default("low")       // low, medium, high
+  
+  // Concurrency & Soft Delete
+  version    Int           @default(1)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  deletedAt  DateTime?     // Soft Delete
 
   @@index([status])
   @@index([createdAt])
@@ -143,25 +193,33 @@ model Incident {
 
 // Appeals database
 model Appeal {
-  id                String    @id @default(uuid())
+  id                String        @id @default(uuid())
+  profileId         String?
+  profile           YouthProfile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
   fullName          String
   type              String
   text              String
   date              String
-  status            String    @default("yangi")     // hal etilgan, kutilmoqda, yangi
+  status            String        @default("yangi")     // hal etilgan, kutilmoqda, yangi
   predictedCategory String?
-  createdAt         DateTime  @default(now())
-  deletedAt         DateTime? // Soft Delete
+  
+  // Concurrency & Soft Delete
+  version           Int           @default(1)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  deletedAt         DateTime?     // Soft Delete
 
   @@index([createdAt])
 }
 
+// AuditLog model
 model AuditLog {
   id        String   @id @default(uuid())
   userId    String?
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   action    String
   details   Json
+  stateDiff Json?    // Stores { before: Json, after: Json } for state audit
   ipAddress String?
   createdAt DateTime @default(now())
 
@@ -191,4 +249,94 @@ model IpLockout {
   updatedAt      DateTime  @updatedAt
 
   @@index([ipAddress])
+}
+
+// Transactional Outbox
+model EventOutbox {
+  id           String    @id @default(uuid())
+  eventType    String
+  eventVersion Int       @default(1)
+  payload      Json
+  processedAt  DateTime?
+  error        String?
+  retryCount   Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([processedAt, retryCount])
+}
+
+// Idempotent Consumers log
+model IdempotentConsumer {
+  id           String   @id // eventId
+  consumerName String
+  processedAt  DateTime @default(now())
+
+  @@unique([id, consumerName])
+}
+
+// Competitions and Events (replaces local eventsList)
+model Event {
+  id           String             @id @default(uuid())
+  titleUz      String
+  titleRu      String
+  date         String
+  status       String             @default("kutilmoqda") // "kutilmoqda", "jarayonda", "yakunlangan"
+  participants EventParticipant[]
+  
+  // Concurrency & Soft Delete
+  version      Int                @default(1)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  deletedAt    DateTime?
+
+  @@index([status])
+}
+
+model EventParticipant {
+  id        String       @id @default(uuid())
+  eventId   String
+  event     Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  profileId String
+  profile   YouthProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  createdAt DateTime     @default(now())
+
+  @@unique([eventId, profileId])
+}
+
+// Joint patrol reports (replaces local jointReports)
+model JointReport {
+  id            String        @id @default(uuid())
+  timestamp     String
+  inspectorName String
+  leaderName    String
+  profileId     String?
+  profile       YouthProfile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
+  mahalla       String
+  descriptionUz String
+  descriptionRu String
+  createdAt     DateTime      @default(now())
+
+  @@index([profileId])
+}
+
+// Custom patrol routes (replaces local customPatrolRoutes)
+model PatrolRoute {
+  id        String   @id @default(uuid())
+  nameUz    String
+  nameRu    String
+  points    Json     // Coordinate arrays
+  createdAt DateTime @default(now())
+}
+
+// Kanban Task list model
+model Task {
+  id        String   @id @default(uuid())
+  title     String
+  desc      String
+  status    String   // "todo", "in_progress", "done"
+  priority  String   // "low", "medium", "high"
+  type      String   // "standard", "leader"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

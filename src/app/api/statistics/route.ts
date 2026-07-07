@@ -122,7 +122,7 @@ export async function GET() {
       familiya: r.familiya,
       mahalla: r.mahalla.nameUz,
       riskScore: 85 + (r.ism.length % 15) // deterministic score
-    }));
+    })).sort((a, b) => b.riskScore - a.riskScore);
 
     return NextResponse.json({
       success: true,

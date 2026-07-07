@@ -590,7 +590,7 @@ export default function AITahlilPage() {
                         <p className="text-[10px] text-foreground/50">{risk.mahalla}</p>
                       </div>
                       <div className="text-xs font-bold text-danger bg-danger/10 px-2 py-1 rounded-md">
-                        {risk.riskScore || Math.floor(80 + Math.random() * 19)}%
+                        {risk.riskScore}%
                       </div>
                     </div>
                   ))}

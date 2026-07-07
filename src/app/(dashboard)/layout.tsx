@@ -3,10 +3,9 @@
 import Sidebar from "@/components/layout/Sidebar";
 import TopNavbar from "@/components/layout/TopNavbar";
 import RightAISidebar from "@/components/layout/RightAISidebar";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
-import { initializeYouthDatabase } from "@/lib/dbInit";
 
 export default function DashboardLayout({
   children,
@@ -19,9 +18,6 @@ export default function DashboardLayout({
   useEffect(() => {
     if (!isLoading && !user) {
       router.push("/");
-    } else if (user) {
-      // Auto seed 50 youth profiles and connections
-      initializeYouthDatabase();
     }
   }, [user, isLoading, router]);
 
